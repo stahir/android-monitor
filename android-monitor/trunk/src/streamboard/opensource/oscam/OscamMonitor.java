@@ -184,6 +184,13 @@ public class OscamMonitor extends TabActivity {
 	 */
 	private void switchViews(int tabidx) {
 		
+		handler.removeCallbacks(status);
+		if(thread != null){
+			if (thread.isAlive()) {
+				thread.stop();
+			}
+		}
+		
 		switch (tabidx){
 
 		case 0:
@@ -205,14 +212,12 @@ public class OscamMonitor extends TabActivity {
 		// Settingspage doesn't need connect to server
 		if (tabidx < 3) {
 			
-			//if (thread.isAlive()) {
-			//	thread.destroy();
-			//}
+			
 			// stop eventually waiting call
 			TextView st = (TextView) findViewById(R.id.serverstatus);
 			st.setVisibility(0);
 			statusbar_set = 0;
-			handler.removeCallbacks(status);
+			
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
