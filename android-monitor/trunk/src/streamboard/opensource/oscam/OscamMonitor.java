@@ -197,9 +197,9 @@ public class OscamMonitor extends TabActivity {
 		// Settingspage doesn't need connect to server
 		if (tabidx < 3) {
 			
-			if (thread.isAlive()) {
-				thread.destroy();
-			}
+			//if (thread.isAlive()) {
+			//	thread.destroy();
+			//}
 			// stop eventually waiting call
 			handler.removeCallbacks(status);
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
