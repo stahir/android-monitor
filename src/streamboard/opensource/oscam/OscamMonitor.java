@@ -30,6 +30,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,8 @@ public class OscamMonitor extends TabActivity {
 	private String filter[];
 	private Runnable status;
 	private Thread thread; 
+	private Handler handler = new Handler();
+
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +69,11 @@ public class OscamMonitor extends TabActivity {
 		// prepare thread
 		status = new Runnable(){
 			@Override
-			public void run() {	getStatus(); }
+			public void run() {	
+				getStatus();
+				//make variable here
+				handler.postDelayed(this, 15000);
+			}
 		};
 
 		Resources res = getResources(); // Resource object to get Drawables
@@ -189,6 +196,12 @@ public class OscamMonitor extends TabActivity {
 
 		// Settingspage doesn't need connect to server
 		if (tabidx < 3) {
+			
+			if (thread.isAlive()) {
+				thread.destroy();
+			}
+			// stop eventually waiting call
+			handler.removeCallbacks(status);
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
