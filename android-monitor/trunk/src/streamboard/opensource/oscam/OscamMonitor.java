@@ -39,6 +39,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -63,7 +65,7 @@ public class OscamMonitor extends TabActivity {
 	private Thread thread; 
 	private Handler handler = new Handler();
 	private ServerInfo serverinfo = new ServerInfo();
-	private Boolean statusbar_set = false;
+	private Integer statusbar_set = 0;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -162,6 +164,8 @@ public class OscamMonitor extends TabActivity {
 	 * fill the settings page textboxes from device
 	 */
 	private void loadSettings() {
+		TextView st = (TextView) findViewById(R.id.serverstatus);
+		st.setVisibility(8);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		EditText urlfield = (EditText)findViewById(R.id.editUri);
 		urlfield.setText(settings.getString("serveraddress", ""));
@@ -205,7 +209,9 @@ public class OscamMonitor extends TabActivity {
 			//	thread.destroy();
 			//}
 			// stop eventually waiting call
-			statusbar_set = false;
+			TextView st = (TextView) findViewById(R.id.serverstatus);
+			st.setVisibility(0);
+			statusbar_set = 0;
 			handler.removeCallbacks(status);
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
@@ -214,26 +220,42 @@ public class OscamMonitor extends TabActivity {
 		
 	}
 	
+	private void setStatusbar(){
+		
+		TextView st = (TextView) findViewById(R.id.serverstatus);
+		Animation a_in = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
+	
+		switch(statusbar_set){
+		
+		case 0:
+			st.setText("Server Version: " + serverinfo.getVersion());
+			statusbar_set++;
+			break;
+		case 1:
+			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+			st.setText("Server Start: " + sdf.format(serverinfo.getStartdate()));
+			statusbar_set++;
+			break;
+		case 2:
+			st.setText("Server Uptime: " + sec2time(serverinfo.getUptime()));
+			statusbar_set=0;
+			break;
+		
+		}
+		  
+	    a_in.reset();
+	    st.clearAnimation();
+	    st.startAnimation(a_in);
+	  
+	}
+	
 	private Runnable returnRes = new Runnable() {
 
 		@Override
 		public void run() {
 			if (clients != null){
 				
-				if (!statusbar_set){
-					TextView st = (TextView) findViewById(R.id.serverstatus);
-					SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
-					if (serverinfo.hasError()){
-						st.setText(serverinfo.getErrorMessage());
-					} else {
-						st.setText(
-								"Server Version: " + serverinfo.getVersion() + "\t\t\t\t" 
-								+ "Server Start: " + sdf.format(serverinfo.getStartdate()) + "\t\t\t\t" 
-								+ "Uptime: " + sec2time(serverinfo.getUptime()));
-						st.setSelected(true);
-					}
-					statusbar_set = true;
-				}
+				setStatusbar();
 				
 				lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row , clients));
 				
