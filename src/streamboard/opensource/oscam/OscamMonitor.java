@@ -2,7 +2,10 @@ package streamboard.opensource.oscam;
 
 import java.io.DataInputStream;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 import javax.net.ssl.SSLException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -59,7 +62,8 @@ public class OscamMonitor extends TabActivity {
 	private Runnable status;
 	private Thread thread; 
 	private Handler handler = new Handler();
-
+	private ServerInfo serverinfo = new ServerInfo();
+	private Boolean statusbar_set = false;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -201,6 +205,7 @@ public class OscamMonitor extends TabActivity {
 			//	thread.destroy();
 			//}
 			// stop eventually waiting call
+			statusbar_set = false;
 			handler.removeCallbacks(status);
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
@@ -214,8 +219,24 @@ public class OscamMonitor extends TabActivity {
 		@Override
 		public void run() {
 			if (clients != null){
-
+				
+				if (!statusbar_set){
+					TextView st = (TextView) findViewById(R.id.serverstatus);
+					SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+					if (serverinfo.hasError()){
+						st.setText(serverinfo.getErrorMessage());
+					} else {
+						st.setText(
+								"Server Version: " + serverinfo.getVersion() + "\t\t\t\t" 
+								+ "Server Start: " + sdf.format(serverinfo.getStartdate()) + "\t\t\t\t" 
+								+ "Uptime: " + sec2time(serverinfo.getUptime()));
+						st.setSelected(true);
+					}
+					statusbar_set = true;
+				}
+				
 				lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row , clients));
+				
 				oProgressDialog.dismiss();
 				lv1.setOnItemClickListener(new OnItemClickListener() {
 					public void onItemClick(AdapterView<?> parent, View view,
@@ -297,6 +318,13 @@ public class OscamMonitor extends TabActivity {
 					Document doc = db.parse(new InputSource(new StringReader(httpresponse.toString())));
 					doc.getDocumentElement().normalize();			
 
+					// check serverinfo and exit on error
+					serverinfo = new ServerInfo(doc);
+					if (serverinfo.hasError()){
+						Toast.makeText(tabHost.getContext(), serverinfo.getErrorMessage(), Toast.LENGTH_LONG).show();
+						return null;
+					}
+					
 					// return a list of clientnodes
 					return doc.getElementsByTagName("client");
 				}
