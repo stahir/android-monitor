@@ -79,7 +79,7 @@ public class OscamMonitor extends TabActivity {
 			public void run() {	
 				getStatus();
 				//make variable here
-				handler.postDelayed(this, 15000);
+				handler.postDelayed(this, 10000);
 			}
 		};
 
@@ -482,7 +482,7 @@ public class OscamMonitor extends TabActivity {
 			View v = convertView;
 			if (v == null) {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.listview_row, null);
+				v = vi.inflate(R.layout.listview_row1, null);
 			}
 			StatusClient o = items.get(position);
 			if (o != null) {
@@ -513,19 +513,27 @@ public class OscamMonitor extends TabActivity {
 
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+				TextView tmt = (TextView) v.findViewById(R.id.timetext);
 
 				if (tt != null) {
-					tt.setText(o.name + " (" + o.protocol + ")");
+					if (o.request_answered.length()>0){
+						tt.setText(o.name  + " --> " + o.request_answered);
+					}
+					else
+						tt.setText(o.name);
 				}
 				if(bt != null){
 					if (o.request_ecmtime > 0) {
 						bt.setVisibility(0);
-						bt.setText(o.request + " (" + o.request_ecmtime.toString() + "ms)");
+						tmt.setVisibility(0);
+						tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
+						bt.setText(o.request);
 						icon.setAlpha(255);
 					} else {
 						if(!isServer)
 							icon.setAlpha(70);
 						bt.setVisibility(8);
+						tmt.setVisibility(8);
 					}
 				}
 				// Iconset: http://www.iconfinder.com/search/?q=iconset:nuvola2
