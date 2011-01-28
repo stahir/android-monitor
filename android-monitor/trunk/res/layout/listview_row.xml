@@ -16,13 +16,11 @@
         android:layout_height="fill_parent">
         <TextView
             android:id="@+id/toptext"
-            android:layout_width="fill_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
             android:gravity="center_vertical"
             android:singleLine="true"
-            android:ellipsize="marquee"
-        />
+            android:ellipsize="marquee" android:layout_width="fill_parent"/>
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="0dip"
@@ -32,5 +30,16 @@
             android:ellipsize="marquee"
             android:textColor="#ffffff00"
         />
-    </LinearLayout>
+    
+
+
+
+
+</LinearLayout>
+
+
+
+
+
+
 </LinearLayout>
