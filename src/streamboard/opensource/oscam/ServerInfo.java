@@ -55,7 +55,7 @@ public class ServerInfo {
 		version = rootelement.getAttribute("version");
 		
 		try {
-			startdate = dateparser.parse(rootelement.getAttribute("startdate"));
+			startdate = dateparser.parse(rootelement.getAttribute("starttime"));
 		} catch (ParseException e) {
 			startdate = new Date();
 		}
