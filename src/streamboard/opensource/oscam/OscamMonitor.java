@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -131,11 +132,16 @@ public class OscamMonitor extends TabActivity {
 			}     
 		}); 
 		
-		// Clienttab on start
-		tabHost.setCurrentTab(0);
+		if (chkSettings()){
+			// if settings filled - clienttab on start
+			tabHost.setCurrentTab(0);
+			switchViews(0);
+		} else {
+			// if settings not filled - settingstab on start
+			tabHost.setCurrentTab(0);
+			switchViews(3);
+		}
 		
-		// first run type='c'
-		switchViews(0);
 	}
 
 	/*
@@ -179,6 +185,18 @@ public class OscamMonitor extends TabActivity {
 		checkssl.setChecked(settings.getBoolean("serverssl", true));
 	}
 	
+	private Boolean chkSettings(){
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		if (settings.getString("serveraddress", "").length() == 0)
+			return false;
+		if (settings.getString("serveruser", "").length() == 0)	
+			return false;
+		if (settings.getString("serverpass", "").length() == 0)	
+			return false;
+		
+		return true;
+	}
+	
 	/*
 	 * switch views depending on given tab index
 	 */
@@ -212,7 +230,6 @@ public class OscamMonitor extends TabActivity {
 		// Settingspage doesn't need connect to server
 		if (tabidx < 3) {
 			
-			
 			// stop eventually waiting call
 			TextView st = (TextView) findViewById(R.id.serverstatus);
 			st.setVisibility(0);
@@ -229,6 +246,30 @@ public class OscamMonitor extends TabActivity {
 		
 		TextView st = (TextView) findViewById(R.id.serverstatus);
 		Animation a_in = AnimationUtils.loadAnimation(this, R.anim.alpha_in);
+		
+		a_in.setAnimationListener(new AnimationListener() {
+
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				// TODO Auto-generated method stub
+				TextView st = (TextView) findViewById(R.id.serverstatus);
+				st.setText("");
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+		
+			
+		});
 	
 		switch(statusbar_set){
 		

@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 import android.util.Log;
 
 public class ServerInfo {
-	private String version;
+	private String version = "Server Version: unknown";
 	private Date startdate;
 	private Integer uptime;
 	private Boolean haserror = false;
