@@ -510,6 +510,12 @@ public class OscamMonitor extends TabActivity {
 		
 		public void refreshItems(ArrayList<StatusClient> items){
 			this.items = items;
+			while (this.items.size() < this.getCount()){
+				this.remove( this.getItem( this.getCount() - 1));
+			}
+			while (this.items.size() > this.getCount()){
+				this.add(new StatusClient());
+			}
 		}
 
 		@Override
@@ -519,7 +525,9 @@ public class OscamMonitor extends TabActivity {
 				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.listview_row1, null);
 			}
+			
 			StatusClient o = items.get(position);
+			
 			if (o != null) {
 
 				ImageView icon =(ImageView) v.findViewById(R.id.icon);
