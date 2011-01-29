@@ -252,11 +252,11 @@ public class OscamMonitor extends TabActivity {
 
 				case 0:
 					//Shutdown
-					parameter="/shutdown.html/action=Shutdown";
+					parameter="/shutdown.html?action=Shutdown";
 					break;
 				case 1:
 					//Restart
-					parameter="/shutdown.html/action=Restart";
+					parameter="/shutdown.html?action=Restart";
 					break;
 				}
 
@@ -286,10 +286,23 @@ public class OscamMonitor extends TabActivity {
 						new AuthScope(server, port, null, "Digest"), 
 						new UsernamePasswordCredentials(user, password));
 
+				Log.i( "Response  ", uri.toString());
+				
 				// Execute HTTP request
 				HttpGet httpget = new HttpGet(uri.toString());
-				httpclient.execute(httpget);
-
+				HttpResponse response = httpclient.execute(httpget);
+				
+				// Retrieve content
+				HttpEntity r_entity = response.getEntity();
+				byte[] result = new byte[2048];
+				StringBuilder httpresponse = new StringBuilder();
+				int len;
+				if( r_entity != null ) {
+					DataInputStream is = new DataInputStream(r_entity.getContent()); 
+					while ((len = is.read(result)) != -1) httpresponse.append(new String(result).substring(0, len));
+				}
+				httpclient.getConnectionManager().shutdown();
+				//Log.i( "Response", httpresponse.toString());
 			}
 
 		}
