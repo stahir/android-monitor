@@ -100,6 +100,7 @@ public class OscamMonitor extends TabActivity {
 				
 				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 				handler.postDelayed(this, refreshtimes[settings.getInt("serverrefresh", 0)]);
+				
 			}
 		};
 
@@ -179,8 +180,8 @@ public class OscamMonitor extends TabActivity {
 			switchViews(0);
 		} else {
 			// if settings not filled - settingstab on start
-			tabHost.setCurrentTab(0);
-			switchViews(3);
+			tabHost.setCurrentTab(4);
+			switchViews(4);
 		}
 		
 	}
@@ -365,8 +366,9 @@ public class OscamMonitor extends TabActivity {
 			thread.start();
 		} else {
 			TextView st = (TextView) findViewById(R.id.serverstatus);
-			Animation a= st.getAnimation();
-			a.cancel();
+			Animation a = st.getAnimation();
+			if (a != null)
+				a.cancel();
 			st.setVisibility(8);
 		}
 		
