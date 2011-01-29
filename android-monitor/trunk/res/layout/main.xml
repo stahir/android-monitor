@@ -58,7 +58,7 @@
 						<TextView  
 							android:layout_width="fill_parent"  
 							android:layout_height="wrap_content" 
-							android:layout_marginLeft="3px"/>
+							android:layout_marginLeft="3dp"/>
 					</TableRow>
 					
     				<TableRow>
@@ -91,7 +91,7 @@
 				<TextView  
 					android:layout_width="fill_parent"  
 					android:layout_height="wrap_content" 
-					android:layout_marginLeft="3px" 
+					android:layout_marginLeft="3dp" 
 					android:text="URL (my.domain.de)"/>
 					
 				<EditText 
@@ -110,7 +110,7 @@
 						<TextView 
 							android:layout_width="fill_parent"  
 							android:layout_height="wrap_content" 
-							android:layout_marginLeft="3px" 
+							android:layout_marginLeft="3dp" 
 							android:text="Port"/>
 					</TableRow>
 					<TableRow>
@@ -128,7 +128,7 @@
 							
 						<CheckBox 
 							android:id="@+id/checkSSL" 
-							android:layout_width="150px" 
+							android:layout_width="150dp" 
 							android:layout_height="wrap_content" 
 							android:text="SSL (https://)" 
 							android:gravity="center_vertical"/>
@@ -138,7 +138,7 @@
 				<TextView  
 					android:layout_width="fill_parent"  
 					android:layout_height="wrap_content" 
-					android:layout_marginLeft="3px" 
+					android:layout_marginLeft="3dp" 
 					android:text="User"/>
 					
 				<EditText 
@@ -151,7 +151,7 @@
 				<TextView
 					android:layout_width="fill_parent"  
 					android:layout_height="wrap_content" 
-					android:layout_marginLeft="3px"
+					android:layout_marginLeft="3dp"
 					android:text="Pass"/>
 					
 				<EditText
@@ -165,7 +165,7 @@
 				<TextView  
 					android:layout_width="fill_parent"  
 					android:layout_height="wrap_content" 
-					android:layout_marginLeft="3px"
+					android:layout_marginLeft="3dp"
 					android:text="Refreshtime"/>
 				
 				<TableLayout 
