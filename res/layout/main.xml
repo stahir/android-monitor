@@ -51,7 +51,8 @@
 					
 				<TextView  
 					android:layout_width="fill_parent"  
-					android:layout_height="wrap_content"  
+					android:layout_height="wrap_content" 
+					android:layout_marginLeft="3px" 
 					android:text="URL (my.domain.de)"/>
 					
 				<EditText 
@@ -69,7 +70,8 @@
     				<TableRow>
 						<TextView 
 							android:layout_width="fill_parent"  
-							android:layout_height="wrap_content"  
+							android:layout_height="wrap_content" 
+							android:layout_marginLeft="3px" 
 							android:text="Port"/>
 					</TableRow>
 					<TableRow>
@@ -96,7 +98,8 @@
 					
 				<TextView  
 					android:layout_width="fill_parent"  
-					android:layout_height="wrap_content"  
+					android:layout_height="wrap_content" 
+					android:layout_marginLeft="3px" 
 					android:text="User"/>
 					
 				<EditText 
@@ -109,6 +112,7 @@
 				<TextView
 					android:layout_width="fill_parent"  
 					android:layout_height="wrap_content" 
+					android:layout_marginLeft="3px"
 					android:text="Pass"/>
 					
 				<EditText
@@ -121,16 +125,32 @@
 						
 				<TextView  
 					android:layout_width="fill_parent"  
-					android:layout_height="wrap_content" />
-						
-				<Button 
-					android:id="@+id/saveButton" 
-					android:layout_gravity="right" 
-					android:layout_width="wrap_content" 
 					android:layout_height="wrap_content" 
-					android:padding="10dp" 
-					android:text="Save Settings"/>
-					
+					android:layout_marginLeft="3px"
+					android:text="Refreshtime"/>
+				
+				<TableLayout 
+					android:layout_width="fill_parent" 
+					android:layout_height="wrap_content" 
+					android:stretchColumns="1">
+						
+    				<TableRow>	
+    					<Spinner 
+    						android:id="@+id/selectRefresh" 
+    						android:entries="@array/refreshitems"
+    						android:layout_width="wrap_content" 
+							android:layout_height="wrap_content" />
+    				
+    					
+						<Button 
+							android:id="@+id/saveButton" 
+							android:layout_gravity="right" 
+							android:layout_width="wrap_content" 
+							android:layout_height="wrap_content" 
+							android:padding="10dp" 
+							android:text="Save Settings"/>
+					</TableRow>
+				</TableLayout>
 			</LinearLayout>
 		</FrameLayout>
 	</LinearLayout>
