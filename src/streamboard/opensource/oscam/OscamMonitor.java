@@ -131,14 +131,35 @@ public class OscamMonitor extends TabActivity {
 		tabHost.addTab(spec);
 
 		//intent = new Intent().setClass(this, SettingsTabpage.class);
+		spec = tabHost.newTabSpec("controls").setIndicator("Control",
+				res.getDrawable(R.drawable.ic_tab_control))
+				.setContent(R.id.ControlForm);
+		tabHost.addTab(spec);
+		
 		spec = tabHost.newTabSpec("settings").setIndicator("Settings",
 				res.getDrawable(R.drawable.ic_tab_settings))
 				.setContent(R.id.SettingsForm);
 		tabHost.addTab(spec);
 
+		// Set listener for Shutdown button in controls
+		final Button buttonshutdown = (Button) findViewById(R.id.saveButton);
+		buttonshutdown.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				sendcontrol(0);
+			}
+		});
+		
+		// Set listener for Restart button in controls
+		final Button buttonrestart = (Button) findViewById(R.id.saveButton);
+		buttonrestart.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				sendcontrol(1);
+			}
+		});
+		
 		// Set listener for button in settings
-		final Button button = (Button) findViewById(R.id.saveButton);
-		button.setOnClickListener(new OnClickListener() {
+		final Button buttonsave = (Button) findViewById(R.id.saveButton);
+		buttonsave.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				saveSettings();
 			}
@@ -192,8 +213,6 @@ public class OscamMonitor extends TabActivity {
 	 * fill the settings page textboxes from device
 	 */
 	private void loadSettings() {
-		TextView st = (TextView) findViewById(R.id.serverstatus);
-		st.setVisibility(8);
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		EditText urlfield = (EditText)findViewById(R.id.editUri);
 		urlfield.setText(settings.getString("serveraddress", ""));
@@ -219,6 +238,72 @@ public class OscamMonitor extends TabActivity {
 			return false;
 		
 		return true;
+	}
+	
+	private void sendcontrol(Integer value){
+		try {
+			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			String server = settings.getString("serveraddress", "");
+
+			if(server.length() > 0){
+
+				String parameter ="";
+				switch(value){
+
+				case 0:
+					//Shutdown
+					parameter="/shutdown.html/action=Shutdown";
+					break;
+				case 1:
+					//Restart
+					parameter="/shutdown.html/action=Restart";
+					break;
+				}
+
+				int port = 80;
+				try{
+					port = Integer.parseInt(settings.getString("serverport", "80"));
+				} catch (Exception e) {}
+				String user = settings.getString("serveruser", "");
+				String password = settings.getString("serverpass", "");
+				StringBuilder uri = new StringBuilder();
+				if (settings.getBoolean("serverssl", true) == true) {
+					uri.append("https://").append(server);
+				} else {
+					uri.append("http://").append(server);
+				}
+				if(port != 80) uri.append(":" + port);
+				uri.append(parameter);
+
+				HttpParams httpParameters = new BasicHttpParams();
+				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
+				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
+				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
+
+				// Set password
+				if(user.length() > 0) httpclient.getCredentialsProvider().setCredentials(
+						new AuthScope(server, port, null, "Digest"), 
+						new UsernamePasswordCredentials(user, password));
+
+				// Execute HTTP request
+				HttpGet httpget = new HttpGet(uri.toString());
+				httpclient.execute(httpget);
+
+			}
+
+		}
+		catch (SSLException sex) {
+			lasterror = sex.getMessage();
+			runOnUiThread(showError);
+			Log.i(getClass().getName() , "XML Download SSL Exception", sex);
+		}
+
+		catch (Exception e) {
+			lasterror = e.getMessage();
+			runOnUiThread(showError);
+			Log.i(getClass().getName() , "XML Download Exception", e);
+		}
 	}
 	
 	/*
@@ -248,6 +333,9 @@ public class OscamMonitor extends TabActivity {
 			filter = new String[]{"s","m","a","h"};
 			break;
 		case 3:
+			// controlpage
+			break;
+		case 4:
 			loadSettings();
 		}
 
@@ -259,10 +347,14 @@ public class OscamMonitor extends TabActivity {
 			st.setVisibility(0);
 			statusbar_set = 0;
 			
-			
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
+		} else {
+			TextView st = (TextView) findViewById(R.id.serverstatus);
+			Animation a= st.getAnimation();
+			a.cancel();
+			st.setVisibility(8);
 		}
 		
 	}
