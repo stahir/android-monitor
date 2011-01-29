@@ -58,7 +58,8 @@
 					android:id="@+id/editUri" 
 					android:layout_width="fill_parent"	
 					android:layout_height="wrap_content" 
-					android:maxLines="1" />
+					android:maxLines="1" 
+					android:singleLine="true"/>
 						
 				<TableLayout 
 					android:layout_width="fill_parent" 
@@ -77,6 +78,7 @@
 							android:layout_width="100px"	
 							android:layout_height="wrap_content" 
 							android:maxLines="1" 
+							android:singleLine="true"
 							android:numeric="integer"/>
 								
 						<TextView  
@@ -101,7 +103,8 @@
 					android:id="@+id/editUser" 
 					android:layout_width="fill_parent"	
 					android:layout_height="wrap_content" 
-					android:maxLines="1" />
+					android:maxLines="1" 
+					android:singleLine="true"/>
 						
 				<TextView
 					android:layout_width="fill_parent"  
@@ -113,6 +116,7 @@
 					android:layout_width="fill_parent"	
 					android:layout_height="wrap_content" 
 					android:maxLines="1" 
+					android:singleLine="true"
 					android:password="true"/>
 						
 				<TextView  
