@@ -69,6 +69,19 @@ public class OscamMonitor extends TabActivity {
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 
+	@Override
+	public void onPause(){
+		super.onPause();
+		
+		handler.removeCallbacks(status);
+		if(thread != null){
+			if (thread.isAlive()) {
+				thread.stop();
+			}
+		}
+	}
+	
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
