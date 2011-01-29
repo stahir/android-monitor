@@ -67,6 +67,7 @@ public class OscamMonitor extends TabActivity {
 	private Handler handler = new Handler();
 	private ServerInfo serverinfo = new ServerInfo();
 	private Integer statusbar_set = 0;
+	private String lasterror = "";
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -312,7 +313,6 @@ public class OscamMonitor extends TabActivity {
 
 						ClientAdapter clients = (ClientAdapter) parent.getAdapter();
 						StatusClient client = clients.getItem(position);
-						//Toast.makeText(tabHost.getContext(), client.getSummary(), Toast.LENGTH_LONG).show();
 
 						AlertDialog detailAlert = new AlertDialog.Builder(tabHost.getContext()).create();
 						detailAlert.setTitle("Details");
@@ -389,7 +389,8 @@ public class OscamMonitor extends TabActivity {
 					// check serverinfo and exit on error
 					serverinfo = new ServerInfo(doc);
 					if (serverinfo.hasError()){
-						Toast.makeText(tabHost.getContext(), serverinfo.getErrorMessage(), Toast.LENGTH_LONG).show();
+						lasterror = serverinfo.getErrorMessage();
+						runOnUiThread(showError);
 						return null;
 					}
 					
@@ -401,13 +402,15 @@ public class OscamMonitor extends TabActivity {
 		} 
 
 		catch (SSLException sex) {
-			Toast.makeText(tabHost.getContext(), sex.getMessage(), Toast.LENGTH_LONG).show();
+			lasterror = sex.getMessage();
+			runOnUiThread(showError);
 			Log.i(getClass().getName() , "XML Download SSL Exception", sex);
 			return null;
 		}
 
 		catch (Exception e) {
-			Toast.makeText(tabHost.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+			lasterror = e.getMessage();
+			runOnUiThread(showError);
 			Log.i(getClass().getName() , "XML Download Exception", e);
 			return null;
 		}
@@ -420,6 +423,25 @@ public class OscamMonitor extends TabActivity {
 		clients = getStatusClients(filter);
 		runOnUiThread(returnRes);
 	}
+	
+	/*
+	 * Because if we want to show errors from thread we must come back to
+	 * UI context before. Using this by setting lasterror first and call
+	 * this runnable with runOnUiThread(showError); then
+	 */
+	private Runnable showError = new Runnable() {
+		@Override
+		public void run() {
+			// stop update loop
+			handler.removeCallbacks(status);
+			//show message
+			Toast.makeText(tabHost.getContext(), lasterror, Toast.LENGTH_LONG).show();
+			lasterror = "";
+			
+			// dismiss progressbar to make UI avail again
+			oProgressDialog.dismiss();
+		}
+	};
 
 	/*
 	 * returns an arraylist of clients depending of types given in array
