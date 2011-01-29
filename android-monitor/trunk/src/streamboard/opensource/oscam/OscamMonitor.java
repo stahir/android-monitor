@@ -563,7 +563,7 @@ public class OscamMonitor extends TabActivity {
 						tmt.setVisibility(0);
 						tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
 						if (o.request.equals("unknown")) {
-							bt.setText(o.request + "[" + o.request_caid + ":" + o.request_srvid +"]");
+							bt.setText(o.request + " [" + o.request_caid + ":" + o.request_srvid +"]");
 						} else {
 							bt.setText(o.request);
 						}
