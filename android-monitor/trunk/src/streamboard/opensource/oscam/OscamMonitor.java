@@ -49,6 +49,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class OscamMonitor extends TabActivity {
+	
+	//refreshtime corospond with settings spinnerposition
+	private Integer[] refreshtimes = new Integer[]{10000,15000,20000,25000,30000,60000,80000};
+	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
 	private ProgressDialog oProgressDialog = null;
 	private TabHost tabHost;
@@ -92,8 +97,9 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void run() {	
 				getStatus();
-				//make variable here
-				handler.postDelayed(this, 10000);
+				
+				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+				handler.postDelayed(this, refreshtimes[settings.getInt("serverrefresh", 0)]);
 			}
 		};
 
@@ -175,7 +181,9 @@ public class OscamMonitor extends TabActivity {
 		editor.putString("serverpass", passfield.getText().toString());
 		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL);
 		editor.putBoolean("serverssl", checkssl.isChecked());
-
+		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh);
+		editor.putInt("serverrefresh", selectrefresh.getSelectedItemPosition());
+		
 		editor.commit();
 		Toast.makeText(tabHost.getContext(), "Settings saved", Toast.LENGTH_SHORT).show();
 	}
@@ -197,6 +205,8 @@ public class OscamMonitor extends TabActivity {
 		passfield.setText(settings.getString("serverpass", ""));
 		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL);
 		checkssl.setChecked(settings.getBoolean("serverssl", true));
+		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh);
+		selectrefresh.setSelection(settings.getInt("serverrefresh", 0));
 	}
 	
 	private Boolean chkSettings(){
