@@ -142,7 +142,7 @@ public class OscamMonitor extends TabActivity {
 		tabHost.addTab(spec);
 
 		// Set listener for Shutdown button in controls
-		final Button buttonshutdown = (Button) findViewById(R.id.saveButton);
+		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
 		buttonshutdown.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				sendcontrol(0);
@@ -150,7 +150,7 @@ public class OscamMonitor extends TabActivity {
 		});
 		
 		// Set listener for Restart button in controls
-		final Button buttonrestart = (Button) findViewById(R.id.saveButton);
+		final Button buttonrestart = (Button) findViewById(R.id.ctrlServerRestart);
 		buttonrestart.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				sendcontrol(1);
