@@ -236,6 +236,7 @@ public class OscamMonitor extends TabActivity {
 			st.setVisibility(0);
 			statusbar_set = 0;
 			
+			
 			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
@@ -304,9 +305,17 @@ public class OscamMonitor extends TabActivity {
 				
 				setStatusbar();
 				
-				lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row , clients));
+				if (lv1.getAdapter() == null){
+					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row , clients));
+				} else {
+					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
+					ad.refreshItems(clients);
+					ad.notifyDataSetChanged();
+				}
 				
 				oProgressDialog.dismiss();
+				
+				
 				lv1.setOnItemClickListener(new OnItemClickListener() {
 					public void onItemClick(AdapterView<?> parent, View view,
 							int position, long id) {
@@ -498,6 +507,10 @@ public class OscamMonitor extends TabActivity {
 			super(context, textViewResourceId, items);
 			this.items = items;
 		}
+		
+		public void refreshItems(ArrayList<StatusClient> items){
+			this.items = items;
+		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -559,6 +572,7 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				// Iconset: http://www.iconfinder.com/search/?q=iconset:nuvola2
+				this.notifyDataSetChanged();
 			}
 			return v;
 		}
