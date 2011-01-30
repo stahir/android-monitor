@@ -242,82 +242,21 @@ public class OscamMonitor extends TabActivity {
 	}
 	
 	private void sendcontrol(Integer value){
-		try {
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String server = settings.getString("serveraddress", "");
 
-			if(server.length() > 0){
+		String parameter ="";
+		switch(value){
 
-				String parameter ="";
-				switch(value){
-
-				case 0:
-					//Shutdown
-					parameter="/shutdown.html?action=Shutdown";
-					break;
-				case 1:
-					//Restart
-					parameter="/shutdown.html?action=Restart";
-					break;
-				}
-
-				int port = 80;
-				try{
-					port = Integer.parseInt(settings.getString("serverport", "80"));
-				} catch (Exception e) {}
-				String user = settings.getString("serveruser", "");
-				String password = settings.getString("serverpass", "");
-				StringBuilder uri = new StringBuilder();
-				if (settings.getBoolean("serverssl", true) == true) {
-					uri.append("https://").append(server);
-				} else {
-					uri.append("http://").append(server);
-				}
-				if(port != 80) uri.append(":" + port);
-				uri.append(parameter);
-
-				HttpParams httpParameters = new BasicHttpParams();
-				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
-				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
-				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
-				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
-
-				// Set password
-				if(user.length() > 0) httpclient.getCredentialsProvider().setCredentials(
-						new AuthScope(server, port, null, "Digest"), 
-						new UsernamePasswordCredentials(user, password));
-
-				Log.i( "Response  ", uri.toString());
-				
-				// Execute HTTP request
-				HttpGet httpget = new HttpGet(uri.toString());
-				HttpResponse response = httpclient.execute(httpget);
-				
-				// Retrieve content
-				HttpEntity r_entity = response.getEntity();
-				byte[] result = new byte[2048];
-				StringBuilder httpresponse = new StringBuilder();
-				int len;
-				if( r_entity != null ) {
-					DataInputStream is = new DataInputStream(r_entity.getContent()); 
-					while ((len = is.read(result)) != -1) httpresponse.append(new String(result).substring(0, len));
-				}
-				httpclient.getConnectionManager().shutdown();
-				//Log.i( "Response", httpresponse.toString());
-			}
-
-		}
-		catch (SSLException sex) {
-			lasterror = sex.getMessage();
-			runOnUiThread(showError);
-			Log.i(getClass().getName() , "XML Download SSL Exception", sex);
+		case 0:
+			//Shutdown
+			parameter="/shutdown.html?action=Shutdown";
+			break;
+		case 1:
+			//Restart
+			parameter="/shutdown.html?action=Restart";
+			break;
 		}
 
-		catch (Exception e) {
-			lasterror = e.getMessage();
-			runOnUiThread(showError);
-			Log.i(getClass().getName() , "XML Download Exception", e);
-		}
+		String result = getServerResponse(parameter);
 	}
 	
 	/*
@@ -470,7 +409,7 @@ public class OscamMonitor extends TabActivity {
 		}
 	};
 
-	public NodeList getNodes() {
+	private String getServerResponse(String parameter){
 		try {
 			// fixme: SSL issues must be handled (e.g. expired cert)
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
@@ -490,7 +429,7 @@ public class OscamMonitor extends TabActivity {
 					uri.append("http://").append(server);
 				}
 				if(port != 80) uri.append(":" + port);
-				uri.append("/oscamapi.html?part=status");
+				uri.append(parameter);
 
 				HttpParams httpParameters = new BasicHttpParams();
 				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
@@ -519,40 +458,57 @@ public class OscamMonitor extends TabActivity {
 				httpclient.getConnectionManager().shutdown();
 
 				if(httpresponse.length() > 0){
-					// Create XML-DOM
-					DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-					DocumentBuilder db = dbf.newDocumentBuilder();
-					Document doc = db.parse(new InputSource(new StringReader(httpresponse.toString())));
-					doc.getDocumentElement().normalize();			
-
-					// check serverinfo and exit on error
-					serverinfo = new ServerInfo(doc);
-					if (serverinfo.hasError()){
-						lasterror = serverinfo.getErrorMessage();
-						runOnUiThread(showError);
-						return null;
-					}
-					
-					// return a list of clientnodes
-					return doc.getElementsByTagName("client");
+					return httpresponse.toString();
 				}
 			}
-			return null;
+			return "";
 		} 
 
 		catch (SSLException sex) {
 			lasterror = sex.getMessage();
 			runOnUiThread(showError);
 			Log.i(getClass().getName() , "XML Download SSL Exception", sex);
-			return null;
+			return "";
 		}
 
 		catch (Exception e) {
 			lasterror = e.getMessage();
 			runOnUiThread(showError);
 			Log.i(getClass().getName() , "XML Download Exception", e);
+			return "";
+		}
+	}
+	
+	public NodeList getNodes() {
+		try {
+			String httpresponse = getServerResponse("/oscamapi.html?part=status");
+			if(httpresponse.length() > 0){
+				// Create XML-DOM
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				Document doc = db.parse(new InputSource(new StringReader(httpresponse.toString())));
+				doc.getDocumentElement().normalize();			
+
+				// check serverinfo and exit on error
+				serverinfo = new ServerInfo(doc);
+				if (serverinfo.hasError()){
+					lasterror = serverinfo.getErrorMessage();
+					runOnUiThread(showError);
+					return null;
+				}
+
+				// return a list of clientnodes
+				return doc.getElementsByTagName("client");
+			} else
+				return null;
+
+		} catch (Exception e) {
+			lasterror = e.getMessage();
+			runOnUiThread(showError);
+			Log.i(getClass().getName() , "XML Download Exception", e);
 			return null;
 		}
+
 	}
 
 	/*
