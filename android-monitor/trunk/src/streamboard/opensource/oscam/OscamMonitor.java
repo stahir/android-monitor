@@ -38,6 +38,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -88,6 +91,27 @@ public class OscamMonitor extends TabActivity {
 				thread.stop();
 			}
 		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.mainmenu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case R.id.mnu_exit:     
+	        	finish();
+	            break;
+	        case R.id.mnu_settings:     
+	        	Toast.makeText(this, "You pressed the Settings - not yet implemented", Toast.LENGTH_LONG).show();
+	            break;
+	
+	    }
+	    return true;
 	}
 	
 	@Override
