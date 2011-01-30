@@ -1,7 +1,6 @@
 package streamboard.opensource.oscam;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.w3c.dom.Document;
@@ -48,14 +47,13 @@ public class ServerInfo {
 	
 	public ServerInfo(Document doc){
 		try {
-		SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
 		
 		Node rootnode = doc.getElementsByTagName("oscam").item(0);
 		Element rootelement = (Element) rootnode;
 		version = rootelement.getAttribute("version");
 		
 		try {
-			startdate = dateparser.parse(rootelement.getAttribute("starttime"));
+			startdate = OscamMonitor.dateparser.parse(rootelement.getAttribute("starttime"));
 		} catch (ParseException e) {
 			startdate = new Date();
 		}

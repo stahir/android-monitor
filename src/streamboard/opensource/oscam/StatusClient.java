@@ -1,15 +1,13 @@
 package streamboard.opensource.oscam;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class StatusClient {
-
+	
+	
 	public String name;
 	public String type;
 	public String protocol;
@@ -42,13 +40,13 @@ public class StatusClient {
 	}
 	
 	public String getSummary(){
-		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+		
 		StringBuilder text = new StringBuilder();
 		text.append("Name:\t\t" + name + "\n");
 		text.append("Protocol:\t" + protocol + "\n");
 		text.append("Request:\t" + request_caid + ":" + request_srvid + "\n");
 		text.append("Channel:\t" + request + "\n");
-		text.append("Login:\t\t" + sdf.format(times_login) + "\n");
+		text.append("Login:\t\t" + OscamMonitor.sdf.format(times_login) + "\n");
 		text.append("Online:\t" + OscamMonitor.sec2time(times_online) + "\n");
 		text.append("Idle:\t\t\t" + OscamMonitor.sec2time(times_idle) + "\n");
 		text.append("Connect:\t" + connection_ip + "\n"); 
@@ -62,9 +60,6 @@ public class StatusClient {
 	}
 
 	public StatusClient(Node node){
-
-		SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ");  
-						
 		try {
 			
 			Element baseelement = (Element) node;
@@ -94,7 +89,7 @@ public class StatusClient {
 			innernode = nl.item(0);
 			element = (Element) innernode;
 
-			times_login = dateparser.parse(chkNull(element.getAttribute("login")));
+			times_login = OscamMonitor.dateparser.parse(chkNull(element.getAttribute("login")));
 			times_online = chkIntNull(element.getAttribute("online"));
 			times_idle = chkIntNull(element.getAttribute("idle"));
 

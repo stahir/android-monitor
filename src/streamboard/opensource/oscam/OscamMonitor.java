@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -60,6 +59,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class OscamMonitor extends TabActivity {
+	static SimpleDateFormat sdf;
+	static SimpleDateFormat dateparser; 
 	
 	//refreshtime corospond with settings spinnerposition
 	private Integer[] refreshtimes = new Integer[]{10000,15000,20000,25000,30000,60000,80000};
@@ -93,6 +94,10 @@ public class OscamMonitor extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+		sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
+		
 		setContentView(R.layout.main);
 		
 		// prepare thread
@@ -352,7 +357,7 @@ public class OscamMonitor extends TabActivity {
 			statusbar_set++;
 			break;
 		case 1:
-			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+			
 			st.setText("Server Start: " + sdf.format(serverinfo.getStartdate()));
 			statusbar_set++;
 			break;
