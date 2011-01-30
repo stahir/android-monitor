@@ -6,7 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -412,6 +415,10 @@ public class OscamMonitor extends TabActivity {
 	private String getServerResponse(String parameter){
 		try {
 			// fixme: SSL issues must be handled (e.g. expired cert)
+			
+			// this http://mobile.synyx.de/2010/06/android-and-self-signed-ssl-certificates/ 
+			// should be implemented
+			
 			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			String server = settings.getString("serveraddress", "");
 
@@ -434,6 +441,7 @@ public class OscamMonitor extends TabActivity {
 				HttpParams httpParameters = new BasicHttpParams();
 				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
 				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+				
 				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
 
@@ -585,6 +593,23 @@ public class OscamMonitor extends TabActivity {
 		return time;  
 	}
 
+	
+	// Create a trust manager that does not validate certificate chains
+	TrustManager[] trustAllCerts = new TrustManager[]{
+			new X509TrustManager() {
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return null;
+				}
+				public void checkClientTrusted(
+						java.security.cert.X509Certificate[] certs, String authType) {
+				}
+				public void checkServerTrusted(
+						java.security.cert.X509Certificate[] certs, String authType) {
+				}
+			}
+	};
+
+	
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
 
 		private ArrayList<StatusClient> items;
