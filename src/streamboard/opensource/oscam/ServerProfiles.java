@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
-import android.util.Log;
 
 
 public class ServerProfiles {
@@ -97,17 +96,9 @@ public class ServerProfiles {
 				serverport = new String[]{settings.getString("serverport", "")};
 				serveruser = new String[]{settings.getString("serveruser", "")};
 				serverpass = new String[]{settings.getString("serverpass", "")};
-				try {
-					serverssl = new String[]{settings.getString("serverssl", "0")};
-				}catch (Exception e){
-					serverssl = new String[]{"0"};
-				}
-				Log.i( "ServerSSL ", serverssl[0]);
-				try {
-					serverrefresh = new String[]{settings.getString("serverrefresh", "")};
-				}catch (Exception e){
-					serverrefresh = new String[]{"0"};
-				}
+				serverssl = new String[]{settings.getString("serverssl", "0")};
+				serverrefresh = new String[]{settings.getString("serverrefresh", "0")};
+				
 			}
 
 			for(int i = 0; i < profile.length; i++){
@@ -158,7 +149,7 @@ public class ServerProfiles {
 				serverssl = serverssl + seperator + "1";
 			else
 				serverssl = serverssl + seperator + "0";
-			serverrefresh = serverrefresh + seperator + set.getServerRefreshValue().toString();
+			serverrefresh = serverrefresh + seperator + set.getServerRefreshIndex().toString();
 			
 			seperator = ";";
 			
