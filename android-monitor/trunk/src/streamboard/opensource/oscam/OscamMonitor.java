@@ -32,6 +32,7 @@ import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -67,6 +68,8 @@ public class OscamMonitor extends TabActivity {
 	
 	//refreshtime corospond with settings spinnerposition
 	private Integer[] refreshtimes = new Integer[]{10000,15000,20000,25000,30000,60000,80000};
+	
+	public static ServerProfiles profiles;
 	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
 	private ProgressDialog oProgressDialog = null;
@@ -106,8 +109,12 @@ public class OscamMonitor extends TabActivity {
 	        case R.id.mnu_exit:     
 	        	finish();
 	            break;
-	        case R.id.mnu_settings:     
-	        	Toast.makeText(this, "You pressed the Settings - not yet implemented", Toast.LENGTH_LONG).show();
+	        case R.id.mnu_settings: 
+	        	Intent intent = new Intent().setClass(this, SettingsPage.class);
+	        	
+	            startActivity(intent);
+	            
+	        	//Toast.makeText(this, "You pressed the Settings - not yet implemented", Toast.LENGTH_LONG).show();
 	            break;
 	
 	    }
@@ -118,6 +125,9 @@ public class OscamMonitor extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		profiles = new ServerProfiles(settings);
 		
 		sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
 		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
@@ -130,8 +140,9 @@ public class OscamMonitor extends TabActivity {
 			public void run() {	
 				getStatus();
 				
-				SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-				handler.postDelayed(this, refreshtimes[settings.getInt("serverrefresh", 0)]);
+				handler.postDelayed(this, profiles.getActiveProfile().getServerRefreshValue());
+				//SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+				//handler.postDelayed(this, refreshtimes[settings.getInt("serverrefresh", 0)]);
 				
 			}
 		};
@@ -194,7 +205,7 @@ public class OscamMonitor extends TabActivity {
 		final Button buttonsave = (Button) findViewById(R.id.saveButton);
 		buttonsave.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				saveSettings();
+				profiles.saveSettings();
 			}
 		});
 
@@ -206,7 +217,7 @@ public class OscamMonitor extends TabActivity {
 			}     
 		}); 
 		
-		if (chkSettings()){
+		if (!profiles.noProfileAvail()){
 			// if settings filled - clienttab on start
 			tabHost.setCurrentTab(0);
 			switchViews(0);
@@ -221,6 +232,7 @@ public class OscamMonitor extends TabActivity {
 	/*
 	 * Save all settings fro settingstab to device
 	 */
+	/*
 	private void saveSettings() {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		SharedPreferences.Editor editor = settings.edit();
@@ -242,9 +254,7 @@ public class OscamMonitor extends TabActivity {
 		Toast.makeText(tabHost.getContext(), "Settings saved", Toast.LENGTH_SHORT).show();
 	}
 	
-	/*
-	 * fill the settings page textboxes from device
-	 */
+
 	private void loadSettings() {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		EditText urlfield = (EditText)findViewById(R.id.editUri);
@@ -272,6 +282,7 @@ public class OscamMonitor extends TabActivity {
 		
 		return true;
 	}
+	*/
 	
 	private void sendcontrol(Integer value){
 
@@ -321,7 +332,8 @@ public class OscamMonitor extends TabActivity {
 			// controlpage
 			break;
 		case 4:
-			loadSettings();
+			profiles.loadSettings();
+			//loadSettings();
 		}
 
 		// Settingspage doesn't need connect to server
@@ -332,7 +344,7 @@ public class OscamMonitor extends TabActivity {
 			st.setVisibility(0);
 			statusbar_set = 0;
 			
-			oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
+			//oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
 		} else {
@@ -414,7 +426,7 @@ public class OscamMonitor extends TabActivity {
 					ad.notifyDataSetChanged();
 				}
 				
-				oProgressDialog.dismiss();
+				//oProgressDialog.dismiss();
 				
 				
 				lv1.setOnItemClickListener(new OnItemClickListener() {
@@ -448,24 +460,29 @@ public class OscamMonitor extends TabActivity {
 			// this http://mobile.synyx.de/2010/06/android-and-self-signed-ssl-certificates/ 
 			// should be implemented
 			
-			SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-			String server = settings.getString("serveraddress", "");
+			//SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+			String server = profiles.getActiveProfile().getServerAddress();
 
 			if(server.length() > 0){
 				int port = 80;
 				try{
-					port = Integer.parseInt(settings.getString("serverport", "80"));
+					port = profiles.getActiveProfile().getServerPort();
 				} catch (Exception e) {}
-				String user = settings.getString("serveruser", "");
-				String password = settings.getString("serverpass", "");
+				
+				//String user = settings.getString("serveruser", "");
+				//String password = settings.getString("serverpass", "");
+				String user = profiles.getActiveProfile().getServerUser();
+				String password = profiles.getActiveProfile().getServerPass();
+				
 				StringBuilder uri = new StringBuilder();
-				if (settings.getBoolean("serverssl", true) == true) {
+				if (profiles.getActiveProfile().getServerSSL() == true) {
 					uri.append("https://").append(server);
 				} else {
 					uri.append("http://").append(server);
 				}
 				if(port != 80) uri.append(":" + port);
 				uri.append(parameter);
+				Log.i( "Loader ", uri.toString());
 
 				HttpParams httpParameters = new BasicHttpParams();
 				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
@@ -571,7 +588,7 @@ public class OscamMonitor extends TabActivity {
 			lasterror = "";
 			
 			// dismiss progressbar to make UI avail again
-			oProgressDialog.dismiss();
+			//oProgressDialog.dismiss();
 		}
 	};
 
