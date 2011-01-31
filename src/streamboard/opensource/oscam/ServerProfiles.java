@@ -43,6 +43,16 @@ public class ServerProfiles {
 			profiles.remove(index);
 	}
 	
+	// Returns string array to fill e.g. spinner or menu
+	public String[] getProfileNamesArray(){
+		ArrayList<String> array = new ArrayList<String>();
+		for (int i = 0; i < profiles.size(); i++){
+			array.add(profiles.get(i).getProfile());
+		}
+		return (String[])array.toArray();
+	}
+
+	//Constructor
 	public ServerProfiles(SharedPreferences settings) {
 		
 		this.settings = settings;
