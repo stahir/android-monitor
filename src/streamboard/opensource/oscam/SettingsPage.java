@@ -29,6 +29,7 @@ public class SettingsPage extends Activity {
 		buttonsave.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				saveSettings();
+				finish();
 			}
 		});
 		
@@ -36,6 +37,8 @@ public class SettingsPage extends Activity {
     }
     
 	private void loadSettings(){
+		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
+		profilefield.setText(activeprofile.getProfile());
 		EditText urlfield = (EditText)findViewById(R.id.editUri1);
 		urlfield.setText(activeprofile.getServerAddress());
 		EditText portfield = (EditText)findViewById(R.id.editPort1);
@@ -51,6 +54,8 @@ public class SettingsPage extends Activity {
 	}
 	
 	private void saveSettings(){
+		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
+		activeprofile.setProfile(profilefield.getText().toString());
 		EditText urlfield = (EditText)findViewById(R.id.editUri1);
 		activeprofile.setServerAddress(urlfield.getText().toString());
 		EditText portfield = (EditText)findViewById(R.id.editPort1);
