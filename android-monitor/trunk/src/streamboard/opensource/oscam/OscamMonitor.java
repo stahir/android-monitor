@@ -105,8 +105,7 @@ public class OscamMonitor extends TabActivity {
 	            break;
 	        case R.id.mnu_settings: 
 	        	Intent intent = new Intent().setClass(this, SettingsPage.class);
-	        	
-	            startActivity(intent);
+	        	startActivity(intent);
 	            
 	        	//Toast.makeText(this, "You pressed the Settings - not yet implemented", Toast.LENGTH_LONG).show();
 	            break;
@@ -174,10 +173,12 @@ public class OscamMonitor extends TabActivity {
 				.setContent(R.id.ControlForm);
 		tabHost.addTab(spec);
 		
+		/*
 		spec = tabHost.newTabSpec("settings").setIndicator("Settings",
 				res.getDrawable(R.drawable.ic_tab_settings))
 				.setContent(R.id.SettingsForm);
 		tabHost.addTab(spec);
+		*/
 
 		// Set listener for Shutdown button in controls
 		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
@@ -195,6 +196,7 @@ public class OscamMonitor extends TabActivity {
 			}
 		});
 		
+		/*
 		// Set listener for button in settings
 		final Button buttonsave = (Button) findViewById(R.id.saveButton);
 		buttonsave.setOnClickListener(new OnClickListener() {
@@ -202,6 +204,7 @@ public class OscamMonitor extends TabActivity {
 				profiles.saveSettings();
 			}
 		});
+		*/
 
 		// Set listener for tabchange
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
@@ -217,8 +220,10 @@ public class OscamMonitor extends TabActivity {
 			switchViews(0);
 		} else {
 			// if settings not filled - settingstab on start
-			tabHost.setCurrentTab(4);
-			switchViews(4);
+			Intent intent = new Intent().setClass(this, SettingsPage.class);
+        	startActivity(intent);
+			//tabHost.setCurrentTab(4);
+			//switchViews(4);
 		}
 		
 	}
@@ -326,7 +331,7 @@ public class OscamMonitor extends TabActivity {
 			// controlpage
 			break;
 		case 4:
-			profiles.loadSettings();
+			//profiles.loadSettings();
 			//loadSettings();
 		}
 

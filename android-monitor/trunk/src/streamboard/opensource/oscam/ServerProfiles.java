@@ -13,6 +13,7 @@ public class ServerProfiles {
 	public ArrayList<ServerSetting> profiles;
 	private ServerSetting actualprofile;
 	private SharedPreferences settings;
+	private Integer actualprofile_idx;
 	
 	public Boolean noProfileAvail(){
 		return profiles.get(0).getProfile().length() == 0;
@@ -23,10 +24,17 @@ public class ServerProfiles {
 	}
 	
 	public void setActiveProfile(Integer index){
-		if(index > profiles.size()-1)
+		if(index > profiles.size()-1){
 			actualprofile = profiles.get(profiles.size()-1);
-		else
+			actualprofile_idx = profiles.size()-1;
+		} else {
 			actualprofile = profiles.get(index);
+			actualprofile_idx = index;
+		}
+	}
+	
+	public Integer getActualIdx(){
+		return actualprofile_idx;
 	}
 	
 	public ServerSetting getProfile(Integer index){
@@ -62,6 +70,9 @@ public class ServerProfiles {
 	}
 	
 	public void loadSettings() {
+		
+		actualprofile_idx = Integer.parseInt(settings.getString("lastprofile", "0"));
+		
 		String[] profile;
 		String[] serveraddress;
 		String[] serverport;
@@ -108,7 +119,7 @@ public class ServerProfiles {
 			set.setServerRefreshIndex(serverrefresh[i]);
 			profiles.add(set);
 		}
-		actualprofile = profiles.get(0);
+		actualprofile = profiles.get(actualprofile_idx);
 	}
 	
 	public void saveSettings() {
@@ -150,6 +161,8 @@ public class ServerProfiles {
 		editor.putString("serverpass", serverpass);
 		editor.putString("serverssl", serverssl);
 		editor.putString("serverrefresh", serverrefresh);
+		editor.putString("lastprofile", actualprofile_idx.toString());
+
 		editor.commit();
 
 	}
