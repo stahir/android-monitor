@@ -14,9 +14,10 @@ public class ServerProfiles {
 	private ServerSetting actualprofile;
 	private SharedPreferences settings;
 	private Integer actualprofile_idx;
+	private Boolean noprofile = true;
 	
 	public Boolean noProfileAvail(){
-		return profiles.get(0).getProfile().length() == 0;
+		return noprofile;
 	}
 	
 	public ServerSetting getActiveProfile(){
@@ -70,9 +71,9 @@ public class ServerProfiles {
 	}
 	
 	public void loadSettings() {
-		
+
 		actualprofile_idx = Integer.parseInt(settings.getString("lastprofile", "0"));
-		
+
 		String[] profile;
 		String[] serveraddress;
 		String[] serverport;
@@ -80,48 +81,59 @@ public class ServerProfiles {
 		String[] serverpass;
 		String[] serverssl;
 		String[] serverrefresh;
-		Log.i( "ServerProfiles ", settings.getString("serverprofilename", "profile2"));
-		if(settings.getString("serverprofilename", "profile1").contains(";")){
-			profile = TextUtils.split(settings.getString("serverprofilename", ""), ";");
-			serveraddress = TextUtils.split(settings.getString("serveraddress", ""), ";");
-			serverport = TextUtils.split(settings.getString("serverport", ""), ";");
-			serveruser = TextUtils.split(settings.getString("serveruser", ""), ";");
-			serverpass = TextUtils.split(settings.getString("serverpass", ""), ";");
-			serverssl = TextUtils.split(settings.getString("serverssl", ""), ";");
-			serverrefresh = TextUtils.split(settings.getString("serverrefresh", ""), ";");
+
+		if (settings.getString("serverprofilename", "").length() > 0){
+			if(settings.getString("serverprofilename", "").contains(";")){
+				profile = TextUtils.split(settings.getString("serverprofilename", ""), ";");
+				serveraddress = TextUtils.split(settings.getString("serveraddress", ""), ";");
+				serverport = TextUtils.split(settings.getString("serverport", ""), ";");
+				serveruser = TextUtils.split(settings.getString("serveruser", ""), ";");
+				serverpass = TextUtils.split(settings.getString("serverpass", ""), ";");
+				serverssl = TextUtils.split(settings.getString("serverssl", ""), ";");
+				serverrefresh = TextUtils.split(settings.getString("serverrefresh", ""), ";");
+			} else {
+				profile = new String[]{settings.getString("serverprofilename", "")};
+				serveraddress = new String[]{settings.getString("serveraddress", "")};
+				serverport = new String[]{settings.getString("serverport", "")};
+				serveruser = new String[]{settings.getString("serveruser", "")};
+				serverpass = new String[]{settings.getString("serverpass", "")};
+				try {
+					serverssl = new String[]{settings.getString("serverssl", "0")};
+				}catch (Exception e){
+					serverssl = new String[]{"0"};
+				}
+				Log.i( "ServerSSL ", serverssl[0]);
+				try {
+					serverrefresh = new String[]{settings.getString("serverrefresh", "")};
+				}catch (Exception e){
+					serverrefresh = new String[]{"0"};
+				}
+			}
+
+			for(int i = 0; i < profile.length; i++){
+				ServerSetting set = new ServerSetting();
+				set.setProfile(profile[i]);
+				set.setServerAddress(serveraddress[i]);
+				set.setServerPort(serverport[i]);
+				set.setServerUser(serveruser[i]);
+				set.setServerPass(serverpass[i]);
+				set.setServerSSL(serverssl[i]);
+				set.setServerRefreshIndex(serverrefresh[i]);
+				profiles.add(set);
+			}
+			noprofile = false;
+			actualprofile = profiles.get(actualprofile_idx);
+
 		} else {
-			profile = new String[]{settings.getString("serverprofilename", "profile1")};
-			serveraddress = new String[]{settings.getString("serveraddress", "")};
-			serverport = new String[]{settings.getString("serverport", "")};
-			serveruser = new String[]{settings.getString("serveruser", "")};
-			serverpass = new String[]{settings.getString("serverpass", "")};
-			try {
-				serverssl = new String[]{settings.getString("serverssl", "0")};
-			}catch (Exception e){
-				serverssl = new String[]{"0"};
-			}
-			Log.i( "ServerSSL ", serverssl[0]);
-			try {
-				serverrefresh = new String[]{settings.getString("serverrefresh", "")};
-			}catch (Exception e){
-				serverrefresh = new String[]{"0"};
-			}
-		}
-		
-		for(int i = 0; i < profile.length; i++){
 			ServerSetting set = new ServerSetting();
-			set.setProfile(profile[i]);
-			set.setServerAddress(serveraddress[i]);
-			set.setServerPort(serverport[i]);
-			set.setServerUser(serveruser[i]);
-			set.setServerPass(serverpass[i]);
-			set.setServerSSL(serverssl[i]);
-			set.setServerRefreshIndex(serverrefresh[i]);
 			profiles.add(set);
+			actualprofile_idx = 0;
+			actualprofile=profiles.get(actualprofile_idx);
+			noprofile = true;
 		}
-		actualprofile = profiles.get(actualprofile_idx);
+
 	}
-	
+
 	public void saveSettings() {
 		
 		String seperator = "";

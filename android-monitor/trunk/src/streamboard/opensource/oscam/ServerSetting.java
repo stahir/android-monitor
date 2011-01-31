@@ -4,7 +4,7 @@ public class ServerSetting {
 
 	private Integer[] refreshtimes = new Integer[]{10000,15000,20000,25000,30000,60000,80000};
 	
-	private String _profile;
+	private String _profile = "profile1";
 	public String getProfile(){
 		return _profile;
 	}
@@ -20,7 +20,7 @@ public class ServerSetting {
 		_serveraddress = value;
 	}
 	
-	private String _serverport;
+	private String _serverport = "80";
 	public Integer getServerPort(){
 		return Integer.parseInt(_serverport);
 	}
@@ -47,7 +47,7 @@ public class ServerSetting {
 		_serverpass = value;
 	}
 	
-	private String _serverssl;
+	private String _serverssl = "0";
 	public Boolean getServerSSL(){
 		if (_serverssl.equals("1"))
 			return true;
