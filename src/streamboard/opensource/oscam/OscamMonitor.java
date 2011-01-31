@@ -98,6 +98,12 @@ public class OscamMonitor extends TabActivity {
 	}
 	
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
 	        case R.id.mnu_exit:     
@@ -132,11 +138,7 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void run() {	
 				getStatus();
-				
 				handler.postDelayed(this, profiles.getActiveProfile().getServerRefreshValue());
-				//SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-				//handler.postDelayed(this, refreshtimes[settings.getInt("serverrefresh", 0)]);
-				
 			}
 		};
 
@@ -173,13 +175,6 @@ public class OscamMonitor extends TabActivity {
 				.setContent(R.id.ControlForm);
 		tabHost.addTab(spec);
 		
-		/*
-		spec = tabHost.newTabSpec("settings").setIndicator("Settings",
-				res.getDrawable(R.drawable.ic_tab_settings))
-				.setContent(R.id.SettingsForm);
-		tabHost.addTab(spec);
-		*/
-
 		// Set listener for Shutdown button in controls
 		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
 		buttonshutdown.setOnClickListener(new OnClickListener() {
@@ -195,16 +190,6 @@ public class OscamMonitor extends TabActivity {
 				sendcontrol(1);
 			}
 		});
-		
-		/*
-		// Set listener for button in settings
-		final Button buttonsave = (Button) findViewById(R.id.saveButton);
-		buttonsave.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				profiles.saveSettings();
-			}
-		});
-		*/
 
 		// Set listener for tabchange
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
@@ -214,7 +199,7 @@ public class OscamMonitor extends TabActivity {
 			}     
 		}); 
 		
-		if (!profiles.noProfileAvail()){
+		if (profiles.noProfileAvail() == false){
 			// if settings filled - clienttab on start
 			tabHost.setCurrentTab(0);
 			switchViews(0);
@@ -222,67 +207,11 @@ public class OscamMonitor extends TabActivity {
 			// if settings not filled - settingstab on start
 			Intent intent = new Intent().setClass(this, SettingsPage.class);
         	startActivity(intent);
-			//tabHost.setCurrentTab(4);
-			//switchViews(4);
 		}
 		
 	}
 
-	/*
-	 * Save all settings fro settingstab to device
-	 */
-	/*
-	private void saveSettings() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
 
-		EditText urlfield = (EditText)findViewById(R.id.editUri);
-		editor.putString("serveraddress", urlfield.getText().toString());
-		EditText portfield = (EditText)findViewById(R.id.editPort);
-		editor.putString("serverport", portfield.getText().toString());
-		EditText userfield = (EditText)findViewById(R.id.editUser);
-		editor.putString("serveruser", userfield.getText().toString());
-		EditText passfield = (EditText)findViewById(R.id.editPass);
-		editor.putString("serverpass", passfield.getText().toString());
-		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL);
-		editor.putBoolean("serverssl", checkssl.isChecked());
-		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh);
-		editor.putInt("serverrefresh", selectrefresh.getSelectedItemPosition());
-		
-		editor.commit();
-		Toast.makeText(tabHost.getContext(), "Settings saved", Toast.LENGTH_SHORT).show();
-	}
-	
-
-	private void loadSettings() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		EditText urlfield = (EditText)findViewById(R.id.editUri);
-		urlfield.setText(settings.getString("serveraddress", ""));
-		EditText portfield = (EditText)findViewById(R.id.editPort);
-		portfield.setText(settings.getString("serverport", "80"));
-		EditText userfield = (EditText)findViewById(R.id.editUser);
-		userfield.setText(settings.getString("serveruser", ""));
-		EditText passfield = (EditText)findViewById(R.id.editPass);
-		passfield.setText(settings.getString("serverpass", ""));
-		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL);
-		checkssl.setChecked(settings.getBoolean("serverssl", true));
-		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh);
-		selectrefresh.setSelection(settings.getInt("serverrefresh", 0));
-	}
-	
-	private Boolean chkSettings(){
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		if (settings.getString("serveraddress", "").length() == 0)
-			return false;
-		if (settings.getString("serveruser", "").length() == 0)	
-			return false;
-		if (settings.getString("serverpass", "").length() == 0)	
-			return false;
-		
-		return true;
-	}
-	*/
-	
 	private void sendcontrol(Integer value){
 
 		String parameter ="";
@@ -330,9 +259,6 @@ public class OscamMonitor extends TabActivity {
 		case 3:
 			// controlpage
 			break;
-		case 4:
-			//profiles.loadSettings();
-			//loadSettings();
 		}
 
 		// Settingspage doesn't need connect to server
@@ -363,25 +289,21 @@ public class OscamMonitor extends TabActivity {
 		
 		a_in.setAnimationListener(new AnimationListener() {
 
-			@Override
 			public void onAnimationEnd(Animation animation) {
 				// TODO Auto-generated method stub
 				TextView st = (TextView) findViewById(R.id.serverstatus);
 				st.setText("");
 			}
 
-			@Override
 			public void onAnimationRepeat(Animation animation) {
 				// TODO Auto-generated method stub
 				
 			}
 
-			@Override
 			public void onAnimationStart(Animation animation) {
 				// TODO Auto-generated method stub
 				
 			}
-		
 			
 		});
 	
@@ -458,8 +380,6 @@ public class OscamMonitor extends TabActivity {
 			
 			// this http://mobile.synyx.de/2010/06/android-and-self-signed-ssl-certificates/ 
 			// should be implemented
-			
-			//SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 			String server = profiles.getActiveProfile().getServerAddress();
 
 			if(server.length() > 0){
@@ -467,9 +387,7 @@ public class OscamMonitor extends TabActivity {
 				try{
 					port = profiles.getActiveProfile().getServerPort();
 				} catch (Exception e) {}
-				
-				//String user = settings.getString("serveruser", "");
-				//String password = settings.getString("serverpass", "");
+
 				String user = profiles.getActiveProfile().getServerUser();
 				String password = profiles.getActiveProfile().getServerPass();
 				
