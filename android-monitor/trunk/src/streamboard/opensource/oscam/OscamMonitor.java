@@ -28,7 +28,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -66,7 +65,6 @@ public class OscamMonitor extends TabActivity {
 	public static ServerProfiles profiles;
 	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
-	private ProgressDialog oProgressDialog = null;
 	private TabHost tabHost;
 	private ListView lv1;
 	private ArrayList<StatusClient> clients;
@@ -228,6 +226,7 @@ public class OscamMonitor extends TabActivity {
 		}
 
 		String result = getServerResponse(parameter);
+
 	}
 	
 	/*
