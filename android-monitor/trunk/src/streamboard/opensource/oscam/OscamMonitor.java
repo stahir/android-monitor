@@ -51,11 +51,8 @@ import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,9 +62,6 @@ import android.widget.TabHost.OnTabChangeListener;
 public class OscamMonitor extends TabActivity {
 	static SimpleDateFormat sdf;
 	static SimpleDateFormat dateparser; 
-	
-	//refreshtime corospond with settings spinnerposition
-	private Integer[] refreshtimes = new Integer[]{10000,15000,20000,25000,30000,60000,80000};
 	
 	public static ServerProfiles profiles;
 	
