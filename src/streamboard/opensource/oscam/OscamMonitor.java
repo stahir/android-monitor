@@ -17,6 +17,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -26,6 +27,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+
+import streamboard.opensource.oscam.http.CustomSSLSocketFactory;
 
 import android.app.AlertDialog;
 import android.app.TabActivity;
@@ -97,6 +100,8 @@ public class OscamMonitor extends TabActivity {
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+	
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -405,6 +410,7 @@ public class OscamMonitor extends TabActivity {
 				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 				
 				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
+				httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", new CustomSSLSocketFactory(), port));
 				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
 
 				// Set password

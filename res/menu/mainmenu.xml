@@ -5,5 +5,6 @@
 <item android:id="@+id/mnu_run" android:icon="@drawable/ic_run_oscam" android:enabled="false"></item>
 <item android:id="@+id/mnu_settings" android:enabled="true" android:visible="true" android:icon="@drawable/ic_settings_oscam"></item>
 
-<item android:id="@+id/mnu_profiles" android:icon="@drawable/ic_profiles_oscam" android:enabled="false"></item>
+
+<item android:id="@+id/mnu_profiles" android:icon="@drawable/ic_profiles_oscam" android:menuCategory="container" android:enabled="false"></item>
 </menu>
