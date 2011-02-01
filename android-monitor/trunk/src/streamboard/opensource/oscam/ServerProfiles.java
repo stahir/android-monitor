@@ -33,6 +33,14 @@ public class ServerProfiles {
 		}
 	}
 	
+	public void createProfile(){
+		ServerSetting set = new ServerSetting();
+		set.setProfile("profile" + profiles.size());
+		profiles.add(set);
+		actualprofile_idx = profiles.size() -1;
+		actualprofile= profiles.get(actualprofile_idx);
+	}
+	
 	public Integer getActualIdx(){
 		return actualprofile_idx;
 	}
