@@ -407,8 +407,8 @@ public class OscamMonitor extends TabActivity {
 				Log.i( "Loader ", uri.toString() + " user: " + user + " pass: " + password + " SSL: " + profiles.getActiveProfile().getServerSSL().toString());
 
 				HttpParams httpParameters = new BasicHttpParams();
-				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
-				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
+				//HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
+				//HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 				
 				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
 				if (profiles.getActiveProfile().getServerSSL()  == true )
