@@ -44,6 +44,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -79,14 +80,13 @@ public class OscamMonitor extends TabActivity {
 	private ServerInfo serverinfo = new ServerInfo();
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
+	private SubMenu mnu_profiles;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onPause(){
 		super.onPause();
 		stopRunning();
-		ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
-		aa.clear();
 		profiles.saveSettings();
 	}
 	
@@ -100,14 +100,24 @@ public class OscamMonitor extends TabActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.mainmenu, menu);
+	    
+		mnu_profiles = menu.addSubMenu(0, 3, 0, "Profiles");
+		mnu_profiles.setIcon(getResources().getDrawable(R.drawable.ic_profiles_oscam));
+		mnu_profiles.setHeaderIcon(getResources().getDrawable(R.drawable.ic_profiles_oscam));
+		
 	    return true;
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		
-	
+		mnu_profiles.clear();
 		
+		ArrayList<String> pnames = profiles.getProfileNamesArray();
+		for(int i = 0; i < pnames.size(); i++){
+			mnu_profiles.add(0, i, 0, pnames.get(i));
+		}
+
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -125,8 +135,14 @@ public class OscamMonitor extends TabActivity {
 	        case R.id.mnu_run:     
 	        	startRunning();
 	            break;
+	        default:
+	        	stopRunning();
+	            profiles.setActiveProfile(item.getItemId());
+	            setAppTitle();
+	            switchViews(0);
 	
 	    }
+	    
 	    return true;
 	}
 	
@@ -250,11 +266,18 @@ public class OscamMonitor extends TabActivity {
 		thread.start();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
 			if (thread.isAlive()) {
 				thread.stop();
+			}
+		}
+		if (lv1 != null){
+			if (lv1.getAdapter() != null){
+				ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
+				aa.clear();
 			}
 		}
 	}
