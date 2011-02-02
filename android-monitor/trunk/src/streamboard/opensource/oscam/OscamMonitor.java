@@ -420,17 +420,28 @@ public class OscamMonitor extends TabActivity {
 
 	private String getServerResponse(String parameter){
 		try {
-			// fixme: SSL issues must be handled (e.g. expired cert)
 			
-			// this http://mobile.synyx.de/2010/06/android-and-self-signed-ssl-certificates/ 
-			// should be implemented
 			String server = profiles.getActiveProfile().getServerAddress();
+		
 
 			if(server.length() > 0){
 				int port = 80;
 				try{
 					port = profiles.getActiveProfile().getServerPort();
 				} catch (Exception e) {}
+				
+				// place port on wildcard (for proxy/folders)
+				if (server.contains("*")){
+					if(port != 80){
+						server = server.replace("*", ":" + port);
+					} else {
+						server = server.replace("*", ":80");
+					}
+				} else {
+					if(port != 80){
+						server = server + ":" + port;
+					}
+				}
 
 				String user = profiles.getActiveProfile().getServerUser();
 				String password = profiles.getActiveProfile().getServerPass();
@@ -441,7 +452,7 @@ public class OscamMonitor extends TabActivity {
 				} else {
 					uri.append("http://").append(server);
 				}
-				if(port != 80) uri.append(":" + port);
+	
 				uri.append(parameter);
 				Log.i( "Loader ", uri.toString() + " user: " + user + " pass: " + password + " SSL: " + profiles.getActiveProfile().getServerSSL().toString());
 
