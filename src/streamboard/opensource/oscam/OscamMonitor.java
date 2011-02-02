@@ -135,6 +135,7 @@ public class OscamMonitor extends TabActivity {
 		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
 		
 		setContentView(R.layout.main);
+		this.setTitle("Oscam Monitor: " + profiles.getActiveProfile().getProfile());
 		
 		// prepare thread
 		status = new Runnable(){
@@ -403,14 +404,15 @@ public class OscamMonitor extends TabActivity {
 				}
 				if(port != 80) uri.append(":" + port);
 				uri.append(parameter);
-				Log.i( "Loader ", uri.toString());
+				Log.i( "Loader ", uri.toString() + " user: " + user + " pass: " + password + " SSL: " + profiles.getActiveProfile().getServerSSL().toString());
 
 				HttpParams httpParameters = new BasicHttpParams();
 				HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
 				HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 				
 				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
-				httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", new CustomSSLSocketFactory(), port));
+				if (profiles.getActiveProfile().getServerSSL()  == true )
+					httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", new CustomSSLSocketFactory(), port));
 				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
 
 				// Set password
@@ -434,6 +436,7 @@ public class OscamMonitor extends TabActivity {
 				httpclient.getConnectionManager().shutdown();
 
 				if(httpresponse.length() > 0){
+					Log.i( "Loader ", httpresponse.toString());
 					return httpresponse.toString();
 				}
 			}
