@@ -436,7 +436,7 @@ public class OscamMonitor extends TabActivity {
 				httpclient.getConnectionManager().shutdown();
 
 				if(httpresponse.length() > 0){
-					Log.i( "Loader ", httpresponse.toString());
+					//Log.i( "Loader ", httpresponse.toString());
 					return httpresponse.toString();
 				}
 			}
