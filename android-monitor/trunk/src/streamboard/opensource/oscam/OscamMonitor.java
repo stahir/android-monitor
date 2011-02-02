@@ -62,6 +62,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class OscamMonitor extends TabActivity {
+	
 	static SimpleDateFormat sdf;
 	static SimpleDateFormat dateparser; 
 	
@@ -79,16 +80,20 @@ public class OscamMonitor extends TabActivity {
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onPause(){
 		super.onPause();
-		
-		handler.removeCallbacks(status);
-		if(thread != null){
-			if (thread.isAlive()) {
-				thread.stop();
-			}
-		}
+		stopRunning();
+		ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
+		aa.clear();
+		profiles.saveSettings();
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		setAppTitle();
 	}
 	
 	@Override
@@ -113,10 +118,12 @@ public class OscamMonitor extends TabActivity {
 	        	finish();
 	            break;
 	        case R.id.mnu_settings: 
+	        	stopRunning();
 	        	Intent intent = new Intent().setClass(this, SettingsPage.class);
 	        	startActivity(intent);
-	            
-	        	//Toast.makeText(this, "You pressed the Settings - not yet implemented", Toast.LENGTH_LONG).show();
+	            break;
+	        case R.id.mnu_run:     
+	        	startRunning();
 	            break;
 	
 	    }
@@ -135,7 +142,7 @@ public class OscamMonitor extends TabActivity {
 		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
 		
 		setContentView(R.layout.main);
-		this.setTitle("Oscam Monitor: " + profiles.getActiveProfile().getProfile());
+		setAppTitle();
 		
 		// prepare thread
 		status = new Runnable(){
@@ -215,7 +222,10 @@ public class OscamMonitor extends TabActivity {
 		
 	}
 
-
+	public void setAppTitle(){
+		this.setTitle("Oscam Monitor: " + profiles.getActiveProfile().getProfile());
+	}
+	
 	private void sendcontrol(Integer value){
 
 		String parameter ="";
@@ -235,17 +245,25 @@ public class OscamMonitor extends TabActivity {
 
 	}
 	
-	/*
-	 * switch views depending on given tab index
-	 */
-	private void switchViews(int tabidx) {
-		
+	private void startRunning(){
+		thread = new Thread(null, status, "MagentoBackground");
+		thread.start();
+	}
+	
+	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
 			if (thread.isAlive()) {
 				thread.stop();
 			}
 		}
+	}
+	/*
+	 * switch views depending on given tab index
+	 */
+	private void switchViews(int tabidx) {
+		
+		stopRunning();
 		
 		switch (tabidx){
 
@@ -273,10 +291,8 @@ public class OscamMonitor extends TabActivity {
 			TextView st = (TextView) findViewById(R.id.serverstatus);
 			st.setVisibility(0);
 			statusbar_set = 0;
-			
-			//oProgressDialog = ProgressDialog.show(tabHost.getContext(), "Please wait...", "Retrieving data ...", true);
-			thread = new Thread(null, status, "MagentoBackground");
-			thread.start();
+			startRunning();
+
 		} else {
 			TextView st = (TextView) findViewById(R.id.serverstatus);
 			Animation a = st.getAnimation();

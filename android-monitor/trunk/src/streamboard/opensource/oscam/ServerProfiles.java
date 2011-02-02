@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
-import android.util.Log;
 
 
 public class ServerProfiles {
