@@ -42,8 +42,7 @@ public class SettingsPage extends Activity {
 	            break;
 	        case R.id.mnu_removeprofile: 
 	        	OscamMonitor.profiles.removeProfileAt(OscamMonitor.profiles.getActualIdx());
-	        	//OscamMonitor.profiles.saveSettings();
-	        	//OscamMonitor.profiles.loadSettings();
+	        	OscamMonitor.profiles.saveSettings();
 	        	loadSettings();
 	            break;
 	        case R.id.mnu_addprofile: 
