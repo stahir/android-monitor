@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
+import android.util.Log;
 
 
 public class ServerProfiles {
@@ -29,11 +30,11 @@ public class ServerProfiles {
 	
 	public void setActiveProfile(Integer index){
 		if(index > profiles.size()-1){
-			actualprofile = profiles.get(profiles.size()-1);
 			actualprofile_idx = profiles.size()-1;
+			actualprofile = profiles.get(actualprofile_idx);
 		} else {
-			actualprofile = profiles.get(index);
 			actualprofile_idx = index;
+			actualprofile = profiles.get(actualprofile_idx);
 		}
 	}
 	
@@ -59,11 +60,15 @@ public class ServerProfiles {
 	}
 	
 	public void removeProfileAt(Integer index){
-		if(index < profiles.size()){
-			profiles.remove(index);
+		if(index < profiles.size() && index >= 0){
+			profiles.remove(profiles.get(index));
 			actualprofile_idx = index -1;
-			if(actualprofile_idx >= 0)
+			if(actualprofile_idx >= 0){
 				actualprofile = profiles.get(actualprofile_idx);
+			}else{
+				actualprofile_idx = 0;
+				actualprofile = profiles.get(actualprofile_idx);
+			}
 		}
 	}
 	
@@ -81,13 +86,15 @@ public class ServerProfiles {
 		
 		this.settings = settings;
 		profiles = new ArrayList<ServerSetting>();
+		actualprofile_idx = Integer.parseInt(settings.getString("lastprofile", "0"));
 		loadSettings();
+		
 
 	}
 	
 	public void loadSettings() {
 
-		actualprofile_idx = Integer.parseInt(settings.getString("lastprofile", "0"));
+		
 
 		String[] profile;
 		String[] serveraddress;
