@@ -82,11 +82,17 @@ public class OscamMonitor extends TabActivity {
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public void onPause(){
 		super.onPause();
 		stopRunning();
+		profiles.saveSettings();
+	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
 		profiles.saveSettings();
 	}
 	
@@ -115,7 +121,7 @@ public class OscamMonitor extends TabActivity {
 		
 		ArrayList<String> pnames = profiles.getProfileNamesArray();
 		for(int i = 0; i < pnames.size(); i++){
-			mnu_profiles.add(0, i, 0, pnames.get(i));
+			mnu_profiles.add(0, i + 4, 0, pnames.get(i));
 		}
 
 		return super.onCreateOptionsMenu(menu);
@@ -135,11 +141,16 @@ public class OscamMonitor extends TabActivity {
 	        case R.id.mnu_run:     
 	        	startRunning();
 	            break;
+	        case 3:     
+	        	// do nothing
+	            break;
 	        default:
-	        	stopRunning();
-	            profiles.setActiveProfile(item.getItemId());
-	            setAppTitle();
-	            switchViews(0);
+	        	if((item.getItemId() - 4) != profiles.getActualIdx()){
+	        		profiles.setActiveProfile(item.getItemId() - 4);
+	        		tabHost.setCurrentTab(0);
+	        		setAppTitle();
+	        		switchViews(0);
+	        	}
 	
 	    }
 	    
@@ -271,6 +282,7 @@ public class OscamMonitor extends TabActivity {
 		handler.removeCallbacks(status);
 		if(thread != null){
 			if (thread.isAlive()) {
+				// todo: stop is deprecated and causes exception
 				thread.stop();
 			}
 		}
@@ -430,19 +442,25 @@ public class OscamMonitor extends TabActivity {
 					port = profiles.getActiveProfile().getServerPort();
 				} catch (Exception e) {}
 				
-				// place port on wildcard (for proxy/folders)
-				if (server.contains("*")){
-					if(port != 80){
-						server = server.replace("*", ":" + port);
-					} else {
-						server = server.replace("*", ":80");
-					}
+				String host = "";
+				String[] uriparts = null;
+				if (server.contains("/")){
+					uriparts = server.split("/");
+					host = uriparts[0];
 				} else {
-					if(port != 80){
-						server = server + ":" + port;
+					host = server;
+				}
+				
+				if(port != 80){
+					server = host + ":" + port;
+				}
+				
+				if(uriparts != null){
+					for(int i = 1; i< uriparts.length; i++){
+						server = server + "/" + uriparts[i];
 					}
 				}
-
+				
 				String user = profiles.getActiveProfile().getServerUser();
 				String password = profiles.getActiveProfile().getServerPass();
 				
@@ -467,7 +485,7 @@ public class OscamMonitor extends TabActivity {
 
 				// Set password
 				if(user.length() > 0) httpclient.getCredentialsProvider().setCredentials(
-						new AuthScope(server, port, null, "Digest"), 
+						new AuthScope(host, port, null, "Digest"), 
 						new UsernamePasswordCredentials(user, password));
 
 				// Execute HTTP request
