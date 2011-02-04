@@ -56,6 +56,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,7 +78,10 @@ public class OscamMonitor extends TabActivity {
 	private Runnable status;
 	private Thread thread; 
 	private Handler handler = new Handler();
+	
 	private ServerInfo serverinfo = new ServerInfo();
+	private LogInfo loginfo = new LogInfo();
+	
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
@@ -207,11 +211,18 @@ public class OscamMonitor extends TabActivity {
 				.setContent(R.id.ListViewServer);
 		tabHost.addTab(spec);
 
+		spec = tabHost.newTabSpec("log").setIndicator("Log",
+				res.getDrawable(R.drawable.ic_tab_log))
+				.setContent(R.id.LogForm);
+		tabHost.addTab(spec);
+		
 		//intent = new Intent().setClass(this, SettingsTabpage.class);
 		spec = tabHost.newTabSpec("controls").setIndicator("Control",
 				res.getDrawable(R.drawable.ic_tab_control))
 				.setContent(R.id.ControlForm);
 		tabHost.addTab(spec);
+		
+		
 		
 		// Set listener for Shutdown button in controls
 		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
@@ -315,12 +326,16 @@ public class OscamMonitor extends TabActivity {
 			filter = new String[]{"s","m","a","h"};
 			break;
 		case 3:
+			// Logpage
+			TextView log = (TextView)findViewById(R.id.logtext);
+			log.setText(loginfo.getLogContent());
+		case 4:
 			// controlpage
 			break;
 		}
 
 		// Settingspage doesn't need connect to server
-		if (tabidx < 3) {
+		if (tabidx < 4) {
 			
 			// stop eventually waiting call
 			TextView st = (TextView) findViewById(R.id.serverstatus);
@@ -403,8 +418,11 @@ public class OscamMonitor extends TabActivity {
 					ad.notifyDataSetChanged();
 				}
 				
-				//oProgressDialog.dismiss();
-				
+				// if log tab is active fill fresh log
+				if (tabHost.getCurrentTab() == 3) {
+					TextView  log = (TextView )findViewById(R.id.logtext);
+					log.setText(loginfo.getLogContent());
+				}
 				
 				lv1.setOnItemClickListener(new OnItemClickListener() {
 					public void onItemClick(AdapterView<?> parent, View view,
@@ -528,7 +546,7 @@ public class OscamMonitor extends TabActivity {
 	
 	public NodeList getNodes() {
 		try {
-			String httpresponse = getServerResponse("/oscamapi.html?part=status");
+			String httpresponse = getServerResponse("/oscamapi.html?part=status&appendlog=1");
 			if(httpresponse.length() > 0){
 				// Create XML-DOM
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -543,6 +561,9 @@ public class OscamMonitor extends TabActivity {
 					runOnUiThread(showError);
 					return null;
 				}
+				
+				// parsing the Log node
+				loginfo.parseLogContent(doc);
 
 				// return a list of clientnodes
 				return doc.getElementsByTagName("client");
