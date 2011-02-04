@@ -112,8 +112,8 @@ public class OscamMonitor extends TabActivity {
 	    inflater.inflate(R.menu.mainmenu, menu);
 	    
 		mnu_profiles = menu.addSubMenu(0, 3, 0, "Profiles");
-		mnu_profiles.setIcon(getResources().getDrawable(R.drawable.ic_profiles_oscam));
-		mnu_profiles.setHeaderIcon(getResources().getDrawable(R.drawable.ic_profiles_oscam));
+		mnu_profiles.setIcon(getResources().getDrawable(R.drawable.ic_menu_profiles));
+		mnu_profiles.setHeaderIcon(getResources().getDrawable(R.drawable.ic_menu_profiles));
 		
 	    return true;
 	}
