@@ -351,6 +351,29 @@ public class OscamMonitor extends TabActivity {
 			st.setVisibility(8);
 		}
 		
+		lv1.setAdapter(null);
+		
+		lv1.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+
+				ClientAdapter clients = (ClientAdapter) parent.getAdapter();
+				StatusClient client = clients.getItem(position);
+
+				AlertDialog detailAlert = new AlertDialog.Builder(tabHost.getContext()).create();
+				detailAlert.setTitle("Details");
+				detailAlert.setMessage(client.getSummary());
+				detailAlert.setButton("ok", new DialogInterface.OnClickListener(){
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+					}
+				});
+				detailAlert.show();
+			}
+		}); 
+		
 	}
 	
 	private void setStatusbar(){
@@ -424,26 +447,7 @@ public class OscamMonitor extends TabActivity {
 					log.setText(loginfo.getLogContent());
 				}
 				
-				lv1.setOnItemClickListener(new OnItemClickListener() {
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-
-						ClientAdapter clients = (ClientAdapter) parent.getAdapter();
-						StatusClient client = clients.getItem(position);
-
-						AlertDialog detailAlert = new AlertDialog.Builder(tabHost.getContext()).create();
-						detailAlert.setTitle("Details");
-						detailAlert.setMessage(client.getSummary());
-						detailAlert.setButton("ok", new DialogInterface.OnClickListener(){
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
-							}
-						});
-						detailAlert.show();
-					}
-				}); 
+			
 			}
 		}
 	};
@@ -654,22 +658,6 @@ public class OscamMonitor extends TabActivity {
 	}
 
 	
-	// Create a trust manager that does not validate certificate chains
-	TrustManager[] trustAllCerts = new TrustManager[]{
-			new X509TrustManager() {
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return null;
-				}
-				public void checkClientTrusted(
-						java.security.cert.X509Certificate[] certs, String authType) {
-				}
-				public void checkServerTrusted(
-						java.security.cert.X509Certificate[] certs, String authType) {
-				}
-			}
-	};
-
-	
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
 
 		private ArrayList<StatusClient> items;
@@ -737,7 +725,7 @@ public class OscamMonitor extends TabActivity {
 						tt.setText(o.name);
 				}
 				if(bt != null){
-					if (o.request_ecmtime > 0) {
+					if ((o.request_ecmtime > 0) || (o.request_caid.length() > 0) ) {
 						bt.setVisibility(0);
 						tmt.setVisibility(0);
 						tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
