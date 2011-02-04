@@ -725,7 +725,7 @@ public class OscamMonitor extends TabActivity {
 						tt.setText(o.name);
 				}
 				if(bt != null){
-					if ((o.request_ecmtime > 0) || (o.request_caid.length() > 0) ) {
+					if ((o.request_ecmtime > 0) || !(o.request_caid.equals("0000")) ) {
 						bt.setVisibility(0);
 						tmt.setVisibility(0);
 						tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
