@@ -41,6 +41,7 @@ public class StatusClient {
 	
 	public String getSummary(){
 		
+		if(name != null){
 		StringBuilder text = new StringBuilder();
 		text.append("Name:\t\t" + name + "\n");
 		text.append("Protocol:\t" + protocol + "\n");
@@ -53,6 +54,9 @@ public class StatusClient {
 		text.append("Status:\t\t" + connection + "\n");
 		
 		return text.toString();
+		} else {
+			return "please wait for next refresh";
+		}
 	}
 	
 	public StatusClient(){
