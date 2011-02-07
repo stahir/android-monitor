@@ -294,7 +294,7 @@ public class OscamMonitor extends TabActivity {
 		if(thread != null){
 			if (thread.isAlive()) {
 				// todo: stop is deprecated and causes exception
-				thread.stop();
+				thread.interrupt();
 			}
 		}
 		if (lv1 != null){
