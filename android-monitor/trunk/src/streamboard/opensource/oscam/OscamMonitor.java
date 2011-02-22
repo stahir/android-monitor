@@ -137,17 +137,21 @@ public class OscamMonitor extends TabActivity {
 	        case R.id.mnu_exit:     
 	        	finish();
 	            break;
+	            
 	        case R.id.mnu_settings: 
 	        	stopRunning();
 	        	Intent intent = new Intent().setClass(this, SettingsPage.class);
 	        	startActivity(intent);
 	            break;
+	            
 	        case R.id.mnu_run:     
 	        	startRunning();
 	            break;
+	            
 	        case 3:     
 	        	// do nothing
 	            break;
+	            
 	        default:
 	        	if((item.getItemId() - 4) != profiles.getActualIdx()){
 	        		profiles.setActiveProfile(item.getItemId() - 4);
