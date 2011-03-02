@@ -24,12 +24,7 @@
 						android:layout_marginTop="5dp"
 						android:text="Profile Name"/>
 								
-					<EditText 
-						android:id="@+id/editProfileName" 
-						android:layout_width="fill_parent"	
-						android:layout_height="wrap_content" 
-						android:maxLines="1" 
-						android:singleLine="true"/>
+					
 						
 					<TextView  
 						android:layout_width="fill_parent"  
@@ -37,14 +32,9 @@
 						android:layout_marginLeft="3dp" 
 						android:text="URL (my.domain.de)"/>
 								
-					<EditText 
-						android:id="@+id/editUri1" 
-						android:layout_width="fill_parent"	
-						android:layout_height="wrap_content" 
-						android:maxLines="1" 
-						android:singleLine="true"/>
+					<EditText android:layout_height="wrap_content" android:text="@+id/EditText01" android:singleLine="true" android:maxLines="1" android:id="@+id/editUri1" android:layout_width="fill_parent"></EditText>
 									
-					<TableLayout 
+					<EditText android:layout_height="wrap_content" android:text="@+id/EditText01" android:singleLine="true" android:maxLines="1" android:id="@+id/editProfileName" android:layout_width="fill_parent"></EditText><TableLayout 
 						android:layout_width="fill_parent" 
 						android:layout_height="wrap_content" 
 						android:stretchColumns="1">
@@ -116,24 +106,37 @@
 						android:layout_width="fill_parent" 
 						android:layout_height="wrap_content" 
 						android:stretchColumns="1">
-									
+						<TableRow>				
+						<CheckBox
+			    				android:id="@+id/chkuseSD"
+			    				android:text="Use SD Card for Channel Logos"
+			    				android:layout_width="wrap_content" 
+								android:layout_height="wrap_content" 
+								android:layout_gravity="left"
+								android:layout_span="2"
+								/>
+			    		</TableRow>
 			    		<TableRow>	
 			    			<Spinner 
 			    				android:id="@+id/selectRefresh1" 
 			    				android:entries="@array/refreshitems"
 			    				android:layout_width="wrap_content" 
 								android:layout_height="wrap_content" />
-			    					
-							<Button 
+								
+			    			<Button 
 								android:id="@+id/saveButton1" 
 								android:layout_gravity="right" 
 								android:layout_width="wrap_content" 
 								android:layout_height="wrap_content" 
 								android:padding="10dp" 
 								android:text="Save Settings"/>
+							
 						</TableRow>
+		
 					</TableLayout>
-				</LinearLayout>
+				
+
+</LinearLayout>
 		</ScrollView>
 </LinearLayout>
 
