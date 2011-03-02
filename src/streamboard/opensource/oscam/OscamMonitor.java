@@ -743,9 +743,52 @@ public class OscamMonitor extends TabActivity {
 						if(!isServer)
 							icon.setAlpha(70);
 						bt.setVisibility(8);
-						tmt.setVisibility(8);
+						//tmt.setVisibility(8);
 					}
 				}
+				
+				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
+				
+				if (o.protocol.equals("camd35")){
+					icon1.setImageResource(R.drawable.ic_status_c3);
+					icon1.setAlpha(255);
+				} else if (o.protocol.equals("newcamd")){
+					icon1.setImageResource(R.drawable.ic_status_nc);
+					icon1.setAlpha(255);
+				} else if (o.protocol.equals("cccam")){
+					icon1.setImageResource(R.drawable.ic_status_cc);
+					icon1.setAlpha(255);
+				} else {
+					icon1.setImageResource(R.drawable.ic_status_empty);
+					icon1.setAlpha(70);
+				}
+				
+				ImageView icon2 =(ImageView) v.findViewById(R.id.icon2);
+				
+				if (o.times_idle > 10){
+					icon2.setImageResource(R.drawable.ic_status_idle);
+					icon2.setAlpha(255);
+				} else {
+					icon2.setImageResource(R.drawable.ic_status_empty);
+					icon2.setAlpha(70);
+				}
+				
+				ImageView icon3 =(ImageView) v.findViewById(R.id.icon3);
+				
+				if (o.au.equals("1")){
+					icon3.setImageResource(R.drawable.ic_status_au);
+					icon3.setAlpha(255);
+				} else if (o.au.equals("-1")){
+					icon3.setImageResource(R.drawable.ic_status_au_fail);
+					icon3.setAlpha(255);
+				} else {
+					icon3.setImageResource(R.drawable.ic_status_empty);
+					icon3.setAlpha(70);
+				}
+				
+				
+				
+				
 				// Iconset: http://www.iconfinder.com/search/?q=iconset:nuvola2
 				this.notifyDataSetChanged();
 			}

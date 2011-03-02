@@ -4,17 +4,27 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_gravity="fill" android:layout_height="wrap_content" android:layout_width="fill_parent" android:paddingBottom="6dip" android:paddingRight="2dip" android:paddingLeft="0dip">
     <TableRow 
-		android:baselineAligned="false" android:layout_height="fill_parent" android:layout_width="fill_parent" android:layout_gravity="center_horizontal">
+		android:baselineAligned="false" 
+		android:layout_height="fill_parent" 
+		android:layout_width="fill_parent" 
+		android:layout_gravity="center_horizontal">
     <LinearLayout>
     <ImageView
         android:id="@+id/icon"
         android:layout_height="40dp"
-        android:src="@drawable/clienticon" android:layout_weight="1" android:layout_gravity="top" android:layout_width="40dp" android:layout_marginRight="5dip"/>    
+        android:src="@drawable/clienticon" 
+        android:layout_weight="1" 
+        android:layout_gravity="top" 
+        android:layout_width="40dp" 
+        android:layout_marginRight="5dip"/>    
     </LinearLayout>    
   		<TableLayout 
 			android:id="@+id/TableLayout01" 
 			android:layout_height="wrap_content" 
-			android:stretchColumns="1" android:gravity="fill_vertical" android:layout_weight="4" android:layout_width="fill_parent">
+			android:stretchColumns="1" 
+			android:gravity="fill_vertical" 
+			android:layout_weight="4" 
+			android:layout_width="fill_parent">
 			<TableRow 
 				android:id="@+id/TableRow01" 
 				android:layout_width="wrap_content" 
@@ -22,7 +32,9 @@
 				<TextView 
 					android:layout_height="wrap_content" 
 					android:layout_width="fill_parent" 
-					android:id="@+id/toptext" android:maxLines="1"/>
+					android:id="@+id/toptext" 
+					android:maxLines="1"
+					android:ellipsize="end"/>
 			</TableRow>
 			<TableRow 
 				android:id="@+id/TableRow02" 
@@ -48,7 +60,7 @@
 	    		android:textSize="10dp" 
 	    		android:layout_width="fill_parent" 
 	    		android:fadingEdge="horizontal" 
-	    		android:text="gsdfgsdfgsdfgsd" 
+	    		android:text=" " 
 	    		android:maxLines="1" 
 	    		android:layout_centerHorizontal="false" 
 	    		android:typeface="normal" 
@@ -57,6 +69,7 @@
 			
 			<ImageView
 				android:id="@+id/icon1" 
+				android:src="@drawable/ic_status_empty"
 				android:baselineAlignBottom="True" 
 				android:layout_margin="2dp" 
 				android:layout_below="@+id/timetext" 
@@ -68,6 +81,7 @@
 			
 			<ImageView 
 				android:id="@+id/icon2" 
+				android:src="@drawable/ic_status_empty"
 				android:baselineAlignBottom="True" 
 				android:layout_below="@+id/timetext" 
 				android:layout_height="18dp" 
@@ -79,15 +93,17 @@
 			
 			<ImageView 
 				android:id="@+id/icon3" 
+				android:src="@drawable/ic_status_empty"
 				android:baselineAlignBottom="True" 
 				android:layout_below="@+id/timetext" 
 				android:layout_height="18dp" 
+				android:layout_width="18dp"
 				android:layout_marginLeft="2dip" 
 				android:layout_marginBottom="2dip" 
 				android:layout_marginTop="2dip" 
 				android:layout_centerVertical="false" 
-				android:layout_alignParentRight="true" 
-				android:layout_width="18dip">
+				android:layout_alignParentRight="true" >
+				
 			</ImageView>
 			
 		</RelativeLayout>
