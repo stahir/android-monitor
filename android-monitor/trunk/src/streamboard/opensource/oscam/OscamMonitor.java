@@ -745,6 +745,7 @@ public class OscamMonitor extends TabActivity {
 						if(!isServer)
 							icon.setAlpha(70);
 						bt.setVisibility(8);
+						tmt.setText("");
 						//tmt.setVisibility(8);
 					}
 				}
@@ -757,7 +758,7 @@ public class OscamMonitor extends TabActivity {
 					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
 				}
 				
-				Bitmap resizedbitmap=Bitmap.createBitmap(bmp, 0, 0, width, 1);
+				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 1);
 				bar.setImageBitmap(resizedbitmap);
 				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
