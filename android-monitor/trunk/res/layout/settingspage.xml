@@ -23,18 +23,28 @@
 						android:layout_marginLeft="3dp" 
 						android:layout_marginTop="5dp"
 						android:text="Profile Name"/>
-								
 					
+					<EditText android:layout_height="wrap_content" 
+						android:text="@+id/EditText01" 
+						android:singleLine="true" android:maxLines="1" 
+						android:id="@+id/editProfileName" 
+						android:layout_width="fill_parent"></EditText>			
 						
 					<TextView  
 						android:layout_width="fill_parent"  
 						android:layout_height="wrap_content" 
 						android:layout_marginLeft="3dp" 
 						android:text="URL (my.domain.de)"/>
-								
-					<EditText android:layout_height="wrap_content" android:text="@+id/EditText01" android:singleLine="true" android:maxLines="1" android:id="@+id/editUri1" android:layout_width="fill_parent"></EditText>
-									
-					<EditText android:layout_height="wrap_content" android:text="@+id/EditText01" android:singleLine="true" android:maxLines="1" android:id="@+id/editProfileName" android:layout_width="fill_parent"></EditText><TableLayout 
+					
+					<EditText 
+						android:layout_height="wrap_content" 
+						android:text="@+id/EditText01" 
+						android:singleLine="true" 
+						android:maxLines="1" 
+						android:id="@+id/editUri1" 
+						android:layout_width="fill_parent"></EditText>			
+
+					<TableLayout 
 						android:layout_width="fill_parent" 
 						android:layout_height="wrap_content" 
 						android:stretchColumns="1">
