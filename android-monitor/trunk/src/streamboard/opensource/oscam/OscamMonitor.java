@@ -747,6 +747,15 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				
+				ImageView bar =(ImageView) v.findViewById(R.id.bar);
+				//bar.setAdjustViewBounds(true);
+				
+				if(o.request_ecmtime < 6000){
+					bar.setMaxWidth(o.request_ecmtime / 100);
+				} else {
+					bar.setMaxWidth(60);
+				}
+				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				
 				if (o.protocol.equals("camd35")){
