@@ -37,6 +37,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -748,13 +750,15 @@ public class OscamMonitor extends TabActivity {
 				}
 				
 				ImageView bar =(ImageView) v.findViewById(R.id.bar);
-				//bar.setAdjustViewBounds(true);
+				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
+			    int width = 60;
 				
-				if(o.request_ecmtime < 6000){
-					bar.setMaxWidth(o.request_ecmtime / 100);
-				} else {
-					bar.setMaxWidth(60);
+				if(o.request_ecmtime < 3000){
+					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
 				}
+				
+				Bitmap resizedbitmap=Bitmap.createBitmap(bmp, 0, 0, width, 1);
+				bar.setImageBitmap(resizedbitmap);
 				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				

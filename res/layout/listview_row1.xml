@@ -77,7 +77,7 @@
 				android:layout_centerHorizontal="false" 
 				android:layout_height="1dp" 
 				android:layout_width="60dp"
-				android:scaleType="centerCrop"
+				android:scaleType="matrix"
 				>
 				
 			</ImageView>
