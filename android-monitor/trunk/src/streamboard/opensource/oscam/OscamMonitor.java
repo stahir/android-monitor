@@ -750,18 +750,16 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				
-				/*
 				ImageView bar =(ImageView) v.findViewById(R.id.bar);
 				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
-			    int height = 40;
+			    int width = 50;
 				
 				if(o.request_ecmtime < 3000){
-					height = (o.request_ecmtime / 75) + 1; // +1 to avoid 0 and error
+					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
 				}
 				
-				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, 1, height);
+				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
 				bar.setImageBitmap(resizedbitmap);
-				*/
 				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				
