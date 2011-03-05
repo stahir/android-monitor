@@ -1,25 +1,34 @@
 package streamboard.opensource.oscam;
 
+import java.io.File;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.util.Log;
 
 
 public class LogoFactory {
 	
 	private Context _context;
-	private String _basepath = ""; // Add basepath here
+	private File _root;
+	private String _basepath = "/OscamMonitor/logos/";
+	private String _logopath;
 	private Bitmap _nologo;
 	
 	// constructor
 	public LogoFactory(Context context){
 		_context = context;
+		_root = Environment.getExternalStorageDirectory();
+		_logopath = _root.getAbsolutePath() + _basepath;
 		_nologo = BitmapFactory.decodeResource( _context.getResources(), R.drawable.lg_no_logo);
 	}
 	
 	public Bitmap getLogo(String name[], int type){
 		
-		if (!this.sdIsAvail() || !this.foldersExist()) {
+		Log.i("Pfad", this._logopath);
+		
+		if (!this.hasStorage(false)) {
 			return _nologo;
 		}
 		
@@ -43,7 +52,7 @@ public class LogoFactory {
 	private Bitmap generateUserLogo(String name){
 		
 		StringBuilder filename = new StringBuilder();
-		filename.append(_basepath);
+		filename.append(_logopath);
 		filename.append(name);
 		filename.append(".png");
 		
@@ -53,7 +62,7 @@ public class LogoFactory {
 	private Bitmap generateChannelLogo(String caid, String srvid){
 		
 		StringBuilder filename = new StringBuilder();
-		filename.append(_basepath);
+		filename.append(_logopath);
 		filename.append(caid);
 		filename.append("_");
 		filename.append(srvid);
@@ -64,26 +73,39 @@ public class LogoFactory {
 
 	private Bitmap getBitmapFromPath(String path){
 		try {
-			// filesystem operations (read Bitmap) here
-			return _nologo;
+			 
+			File lp = new File(path);
 			
-			
-		} catch (Exception e) {
+			if (lp.exists()){
+				
+				Log.i("Pfad", path);
+				Bitmap bitmap = BitmapFactory.decodeFile(path);
+				return bitmap;
+				
+			} else {
+				
+				return _nologo;
+				
+			}
+		} 
+		
+		catch (Exception e) {
 			return _nologo;
 		}
 	}
 
-	public Boolean sdIsAvail(){
-		
-		// should return the availibility of SD card
-		return false;
-	}
+	public boolean hasStorage(boolean requireWriteAccess) {
+	    String state = Environment.getExternalStorageState();
+
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    } else if (!requireWriteAccess
+	            && Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	} 
 	
-	private Boolean foldersExist(){
-		
-		// should return true if folders exist
-		return false;
-	}
 
 	public void generateFolders(){
 		
