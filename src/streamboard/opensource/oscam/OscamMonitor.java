@@ -721,7 +721,7 @@ public class OscamMonitor extends TabActivity {
 
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-				TextView tmt = (TextView) v.findViewById(R.id.timetext);
+				//TextView tmt = (TextView) v.findViewById(R.id.timetext);
 
 				if (tt != null) {
 					if (o.request_answered.length()>0){
@@ -733,8 +733,8 @@ public class OscamMonitor extends TabActivity {
 				if(bt != null){
 					if ((o.request_ecmtime > 0) || !(o.request_caid.equals("0000")) ) {
 						bt.setVisibility(0);
-						tmt.setVisibility(0);
-						tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
+						//tmt.setVisibility(0);
+						//tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
 						if (o.request.equals("unknown")) {
 							bt.setText(o.request + " [" + o.request_caid + ":" + o.request_srvid +"]");
 						} else {
@@ -745,21 +745,23 @@ public class OscamMonitor extends TabActivity {
 						if(!isServer)
 							icon.setAlpha(70);
 						bt.setVisibility(8);
-						tmt.setText("");
+						//tmt.setText("");
 						//tmt.setVisibility(8);
 					}
 				}
 				
+				/*
 				ImageView bar =(ImageView) v.findViewById(R.id.bar);
 				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
-			    int width = 60;
+			    int height = 40;
 				
 				if(o.request_ecmtime < 3000){
-					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
+					height = (o.request_ecmtime / 75) + 1; // +1 to avoid 0 and error
 				}
 				
-				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 1);
+				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, 1, height);
 				bar.setImageBitmap(resizedbitmap);
+				*/
 				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				
@@ -777,6 +779,7 @@ public class OscamMonitor extends TabActivity {
 					icon1.setAlpha(70);
 				}
 				
+				/*
 				ImageView icon2 =(ImageView) v.findViewById(R.id.icon2);
 				
 				if (o.times_idle > 10){
@@ -786,6 +789,7 @@ public class OscamMonitor extends TabActivity {
 					icon2.setImageResource(R.drawable.ic_status_empty);
 					icon2.setAlpha(70);
 				}
+				*/
 				
 				ImageView icon3 =(ImageView) v.findViewById(R.id.icon3);
 				
