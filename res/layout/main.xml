@@ -17,6 +17,7 @@
 					android:id="@+id/serverstatus" 
 					android:layout_width="fill_parent"
             		android:layout_height="wrap_content"
+            		android:layout_marginBottom="3dip"
             		android:gravity="center"
 					android:singleLine="true"  
 					android:ellipsize="marquee"/>	
