@@ -71,6 +71,7 @@ public class OscamMonitor extends TabActivity {
 	static SimpleDateFormat dateparser; 
 	
 	public static ServerProfiles profiles;
+	public LogoFactory logos;
 	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
 	private TabHost tabHost;
@@ -195,6 +196,9 @@ public class OscamMonitor extends TabActivity {
 		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 		//Intent intent;  // Reusable Intent for each tab
 
+		// we have to do it here because we havn't context before
+		logos = new LogoFactory(this.tabHost.getContext());
+		
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		//intent = new Intent().setClass(this, StatusClientTabpage.class);
 
@@ -750,6 +754,7 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				
+				// Timebar
 				ImageView bar =(ImageView) v.findViewById(R.id.bar);
 				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
 			    int width = 50;
@@ -760,6 +765,16 @@ public class OscamMonitor extends TabActivity {
 				
 				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
 				bar.setImageBitmap(resizedbitmap);
+				
+				
+				// Channellogo
+				ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
+				String caidsrvid[] = new String[2];
+				caidsrvid[0] = o.request_caid;
+				caidsrvid[1] = o.request_srvid;
+				channellogo.setImageBitmap(logos.getLogo(caidsrvid, 0));
+				
+				
 				
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				
