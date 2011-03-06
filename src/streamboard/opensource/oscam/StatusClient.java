@@ -1,12 +1,12 @@
 package streamboard.opensource.oscam;
 
 import java.util.Date;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class StatusClient {
-	
 	
 	public String name;
 	public String type;
@@ -86,6 +86,7 @@ public class StatusClient {
 			
 			request_caid = chkNull(element.getAttribute("caid"));
 			request_srvid = chkNull(element.getAttribute("srvid"));
+			
 			request_ecmtime = chkIntNull(element.getAttribute("ecmtime"));
 			request_answered = chkNull(element.getAttribute("answered"));
 

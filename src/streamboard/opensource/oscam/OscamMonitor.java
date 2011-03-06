@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.net.ssl.SSLException;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -20,7 +18,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.w3c.dom.Document;
@@ -29,7 +26,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import streamboard.opensource.oscam.http.CustomSSLSocketFactory;
-
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -58,7 +54,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -448,8 +443,9 @@ public class OscamMonitor extends TabActivity {
 				setStatusbar();
 				
 				if (lv1.getAdapter() == null){
-					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row , clients));
+					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , clients));
 				} else {
+					
 					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
 					ad.refreshItems(clients);
 					ad.notifyDataSetChanged();
@@ -700,6 +696,7 @@ public class OscamMonitor extends TabActivity {
 			}
 			
 			StatusClient o = items.get(position);
+			Log.i("Refresh", "Refresh " + position);
 			
 			if (o != null) {
 
@@ -757,9 +754,10 @@ public class OscamMonitor extends TabActivity {
 				ImageView bar =(ImageView) v.findViewById(R.id.bar);
 				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
 			    int width = 50;
-				
-				if(o.request_ecmtime < 3000){
-					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
+			    
+			    width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
+				if(width > 50){
+					width = 50;
 				}
 				
 				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
@@ -783,7 +781,7 @@ public class OscamMonitor extends TabActivity {
 				} else if (o.protocol.equals("newcamd")){
 					icon1.setImageResource(R.drawable.ic_status_nc);
 					icon1.setAlpha(255);
-				} else if (o.protocol.equals("cccam")){
+				} else if (o.protocol.equals("cccam") || o.protocol.equals("cccam-ext")){
 					icon1.setImageResource(R.drawable.ic_status_cc);
 					icon1.setAlpha(255);
 				} else {
