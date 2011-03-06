@@ -52,7 +52,7 @@ public class LogoFactory {
 		StringBuilder filename = new StringBuilder();
 		filename.append(_logopath);
 		filename.append(name);
-		filename.append(".png");
+		filename.append(".pn");
 		
 		return this.getBitmapFromPath(filename.toString());
 	}
@@ -64,7 +64,7 @@ public class LogoFactory {
 		filename.append(caid);
 		filename.append("_");
 		filename.append(srvid);
-		filename.append(".png");
+		filename.append(".pn");
 		
 		return this.getBitmapFromPath(filename.toString());
 	}
@@ -81,7 +81,7 @@ public class LogoFactory {
 				return bitmap;
 				
 			} else {
-				
+								
 				return _nologo;
 				
 			}
