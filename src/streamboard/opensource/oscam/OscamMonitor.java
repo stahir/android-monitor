@@ -199,6 +199,10 @@ public class OscamMonitor extends TabActivity {
 		// we have to do it here because we havn't context before
 		logos = new LogoFactory(this.tabHost.getContext());
 		
+		// Handler to write Stacktrace on SDcard
+		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
+
+		
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		//intent = new Intent().setClass(this, StatusClientTabpage.class);
 
