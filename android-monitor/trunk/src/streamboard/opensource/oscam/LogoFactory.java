@@ -26,8 +26,6 @@ public class LogoFactory {
 	
 	public Bitmap getLogo(String name[], int type){
 		
-		Log.i("Pfad", this._logopath);
-		
 		if (!this.hasStorage(false)) {
 			return _nologo;
 		}

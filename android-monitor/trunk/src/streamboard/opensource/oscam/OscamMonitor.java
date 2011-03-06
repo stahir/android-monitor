@@ -669,12 +669,16 @@ public class OscamMonitor extends TabActivity {
 
 	
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
-
+		private String _srvids[];
+		private ArrayList<Bitmap> _logos;
+		
 		private ArrayList<StatusClient> items;
 
 		public ClientAdapter(Context context, int textViewResourceId, ArrayList<StatusClient> items) {
 			super(context, textViewResourceId, items);
 			this.items = items;
+			_srvids = new String[255];
+			_logos = new ArrayList<Bitmap>(); //Logocache
 		}
 		
 		public void refreshItems(ArrayList<StatusClient> items){
@@ -763,14 +767,20 @@ public class OscamMonitor extends TabActivity {
 				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
 				bar.setImageBitmap(resizedbitmap);
 				
-				
 				// Channellogo
 				ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
 				String caidsrvid[] = new String[2];
 				caidsrvid[0] = o.request_caid;
 				caidsrvid[1] = o.request_srvid;
-				channellogo.setImageBitmap(logos.getLogo(caidsrvid, 0));
-				
+				if(this._srvids[position] == null){
+					this._srvids[position] = caidsrvid[1];
+					this._logos.add(logos.getLogo(caidsrvid, 0)); // add logo to cache
+				}
+				if(!this._srvids[position].equals(caidsrvid[1])){
+					this._srvids[position] = caidsrvid[1];
+					this._logos.set(position, logos.getLogo(caidsrvid, 0)); // change logo on cache position
+				}
+				channellogo.setImageBitmap(this._logos.get(position));
 				
 				// Protocol icon
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
