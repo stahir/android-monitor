@@ -791,7 +791,7 @@ public class OscamMonitor extends TabActivity {
 				} else if (o.protocol.equals("newcamd")){
 					icon1.setImageResource(R.drawable.ic_status_nc);
 					icon1.setAlpha(255);
-				} else if (o.protocol.equals("cccam") || o.protocol.equals("cccam-ext")){
+				} else if (o.protocol.contains("cccam")){
 					icon1.setImageResource(R.drawable.ic_status_cc);
 					icon1.setAlpha(255);
 				} else {
