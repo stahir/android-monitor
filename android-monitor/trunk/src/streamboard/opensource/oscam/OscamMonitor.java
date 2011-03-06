@@ -725,7 +725,6 @@ public class OscamMonitor extends TabActivity {
 
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
-				//TextView tmt = (TextView) v.findViewById(R.id.timetext);
 
 				if (tt != null) {
 					if (o.request_answered.length()>0){
@@ -737,8 +736,6 @@ public class OscamMonitor extends TabActivity {
 				if(bt != null){
 					if ((o.request_ecmtime > 0) || !(o.request_caid.equals("0000")) ) {
 						bt.setVisibility(0);
-						//tmt.setVisibility(0);
-						//tmt.setText("(" + o.request_ecmtime.toString() + "ms)");
 						if (o.request.equals("unknown")) {
 							bt.setText(o.request + " [" + o.request_caid + ":" + o.request_srvid +"]");
 						} else {
@@ -749,8 +746,6 @@ public class OscamMonitor extends TabActivity {
 						if(!isServer)
 							icon.setAlpha(70);
 						bt.setVisibility(8);
-						//tmt.setText("");
-						//tmt.setVisibility(8);
 					}
 				}
 				
@@ -775,7 +770,7 @@ public class OscamMonitor extends TabActivity {
 				channellogo.setImageBitmap(logos.getLogo(caidsrvid, 0));
 				
 				
-				
+				// Protocol icon
 				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 				
 				if (o.protocol.equals("camd35")){
@@ -791,36 +786,18 @@ public class OscamMonitor extends TabActivity {
 					icon1.setImageResource(R.drawable.ic_status_empty);
 					icon1.setAlpha(70);
 				}
-				
-				/*
-				ImageView icon2 =(ImageView) v.findViewById(R.id.icon2);
-				
-				if (o.times_idle > 10){
-					icon2.setImageResource(R.drawable.ic_status_idle);
-					icon2.setAlpha(255);
-				} else {
-					icon2.setImageResource(R.drawable.ic_status_empty);
-					icon2.setAlpha(70);
-				}
-				*/
-				
+			
+				// AU icon
 				ImageView icon3 =(ImageView) v.findViewById(R.id.icon3);
 				
 				if (o.au.equals("1")){
 					icon3.setImageResource(R.drawable.ic_status_au);
-					icon3.setAlpha(255);
 				} else if (o.au.equals("-1")){
 					icon3.setImageResource(R.drawable.ic_status_au_fail);
-					icon3.setAlpha(255);
 				} else {
-					icon3.setImageResource(R.drawable.ic_status_empty);
-					icon3.setAlpha(70);
+					icon3.setImageResource(R.drawable.ic_status_au_no);
 				}
 				
-				
-				
-				
-				// Iconset: http://www.iconfinder.com/search/?q=iconset:nuvola2
 				this.notifyDataSetChanged();
 			}
 			return v;
