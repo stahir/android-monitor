@@ -38,6 +38,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,6 +47,8 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
@@ -694,37 +697,51 @@ public class OscamMonitor extends TabActivity {
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View v = convertView;
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				v = vi.inflate(R.layout.listview_row1, null);
+			StatusClient o = items.get(position);
+			boolean isServer = false;
+			
+			if (o.type.equals("s") || o.type.equals("h") || o.type.equals("m") || o.type.equals("a")){
+				isServer = true;
 			}
 			
-			StatusClient o = items.get(position);
+			if (v == null) {
+				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				if(!isServer){
+					v = vi.inflate(R.layout.listview_row1, null);
+				} else {
+					v = vi.inflate(R.layout.listview_row, null);
+				}
+				
+			} else {
+				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				if(!isServer){
+					v = vi.inflate(R.layout.listview_row1, null);
+				} else {
+					v = vi.inflate(R.layout.listview_row, null);
+				}
+			}
+			
+			
 			Log.i("Refresh", "Refresh " + position);
 			
 			if (o != null) {
 
 				ImageView icon =(ImageView) v.findViewById(R.id.icon);
-				boolean isServer = false;
+				
 
 				if ( o.type.equals("r") ) {
 					icon.setImageResource(R.drawable.readericon);
 				} else if (o.type.equals("p")) {
 					icon.setImageResource(R.drawable.proxyicon);
 				} else if (o.type.equals("s")) {
-					isServer = true;
 					icon.setImageResource(R.drawable.servericon);
 				} else if (o.type.equals("h")) {
-					isServer = true;
 					icon.setImageResource(R.drawable.servericon);
 				} else if (o.type.equals("m")) {
-					isServer = true;
 					icon.setImageResource(R.drawable.servericon);
 				} else if (o.type.equals("a")) {
-					isServer = true;
 					icon.setImageResource(R.drawable.servericon);
 				} else if (o.type.equals("c")) {
-					isServer = true;
 					icon.setImageResource(R.drawable.clienticon);
 				}
 
@@ -754,62 +771,63 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				
-				// Timebar
-				ImageView bar =(ImageView) v.findViewById(R.id.bar);
-				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
-			    int width = 50;
-			    
-			    width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
-				if(width > 50){
-					width = 50;
+				if(!isServer){
+					// Timebar
+					ImageView bar =(ImageView) v.findViewById(R.id.bar);
+					Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_bar);
+					int width = 50;
+
+					width = (o.request_ecmtime / 50) + 1; // +1 to avoid 0 and error
+					if(width > 50){
+						width = 50;
+					}
+
+					Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
+					bar.setImageBitmap(resizedbitmap);
+
+					// Channellogo
+					ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
+					String caidsrvid[] = new String[2];
+					caidsrvid[0] = o.request_caid;
+					caidsrvid[1] = o.request_srvid;
+					if(this._srvids[position] == null){
+						this._srvids[position] = caidsrvid[1];
+						this._logos.add(logos.getLogo(caidsrvid, 0)); // add logo to cache
+					}
+					if(!this._srvids[position].equals(caidsrvid[1])){
+						this._srvids[position] = caidsrvid[1];
+						this._logos.set(position, logos.getLogo(caidsrvid, 0)); // change logo on cache position
+					}
+					channellogo.setImageBitmap(this._logos.get(position));
+
+					// Protocol icon
+					ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
+
+					if (o.protocol.equals("camd35")){
+						icon1.setImageResource(R.drawable.ic_status_c3);
+						icon1.setAlpha(255);
+					} else if (o.protocol.equals("newcamd")){
+						icon1.setImageResource(R.drawable.ic_status_nc);
+						icon1.setAlpha(255);
+					} else if (o.protocol.contains("cccam")){
+						icon1.setImageResource(R.drawable.ic_status_cc);
+						icon1.setAlpha(255);
+					} else {
+						icon1.setImageResource(R.drawable.ic_status_empty);
+						icon1.setAlpha(70);
+					}
+
+					// AU icon
+					ImageView icon3 =(ImageView) v.findViewById(R.id.icon3);
+
+					if (o.au.equals("1")){
+						icon3.setImageResource(R.drawable.ic_status_au);
+					} else if (o.au.equals("-1")){
+						icon3.setImageResource(R.drawable.ic_status_au_fail);
+					} else {
+						icon3.setImageResource(R.drawable.ic_status_au_no);
+					}
 				}
-				
-				Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
-				bar.setImageBitmap(resizedbitmap);
-				
-				// Channellogo
-				ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
-				String caidsrvid[] = new String[2];
-				caidsrvid[0] = o.request_caid;
-				caidsrvid[1] = o.request_srvid;
-				if(this._srvids[position] == null){
-					this._srvids[position] = caidsrvid[1];
-					this._logos.add(logos.getLogo(caidsrvid, 0)); // add logo to cache
-				}
-				if(!this._srvids[position].equals(caidsrvid[1])){
-					this._srvids[position] = caidsrvid[1];
-					this._logos.set(position, logos.getLogo(caidsrvid, 0)); // change logo on cache position
-				}
-				channellogo.setImageBitmap(this._logos.get(position));
-				
-				// Protocol icon
-				ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
-				
-				if (o.protocol.equals("camd35")){
-					icon1.setImageResource(R.drawable.ic_status_c3);
-					icon1.setAlpha(255);
-				} else if (o.protocol.equals("newcamd")){
-					icon1.setImageResource(R.drawable.ic_status_nc);
-					icon1.setAlpha(255);
-				} else if (o.protocol.contains("cccam")){
-					icon1.setImageResource(R.drawable.ic_status_cc);
-					icon1.setAlpha(255);
-				} else {
-					icon1.setImageResource(R.drawable.ic_status_empty);
-					icon1.setAlpha(70);
-				}
-			
-				// AU icon
-				ImageView icon3 =(ImageView) v.findViewById(R.id.icon3);
-				
-				if (o.au.equals("1")){
-					icon3.setImageResource(R.drawable.ic_status_au);
-				} else if (o.au.equals("-1")){
-					icon3.setImageResource(R.drawable.ic_status_au_fail);
-				} else {
-					icon3.setImageResource(R.drawable.ic_status_au_no);
-				}
-				
 				this.notifyDataSetChanged();
 			}
 			return v;
