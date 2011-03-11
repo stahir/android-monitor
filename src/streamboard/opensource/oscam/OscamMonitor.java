@@ -38,7 +38,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,8 +46,6 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
-
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
@@ -291,7 +288,7 @@ public class OscamMonitor extends TabActivity {
 			break;
 		}
 
-		String result = getServerResponse(parameter);
+		getServerResponse(parameter);
 
 	}
 	
@@ -782,8 +779,13 @@ public class OscamMonitor extends TabActivity {
 						width = 50;
 					}
 
-					Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
-					bar.setImageBitmap(resizedbitmap);
+					try{
+						Bitmap resizedbitmap = Bitmap.createBitmap(bmp, 0, 0, width, 2);
+						bar.setImageBitmap(resizedbitmap);
+					} catch (Exception e){
+
+					}
+				
 
 					// Channellogo
 					ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
