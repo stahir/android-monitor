@@ -10,6 +10,13 @@
 			android:titleCondensed="Exit"/>
 			
 		<item 
+			android:id="@+id/mnu_wake" 
+			android:icon="@drawable/ic_menu_wake" 
+			android:enabled="true" 
+			android:title="Wake" 
+			android:titleCondensed="Wake"/>
+			
+		<item 
 			android:id="@+id/mnu_run" 
 			android:icon="@drawable/ic_menu_run" 
 			android:enabled="true" 

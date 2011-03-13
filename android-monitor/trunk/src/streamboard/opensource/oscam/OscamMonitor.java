@@ -37,6 +37,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,6 +62,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class OscamMonitor extends TabActivity {
+	
+	// define the wakeLock as attribute
+	PowerManager.WakeLock wakeLock ;
 	
 	static SimpleDateFormat sdf;
 	static SimpleDateFormat dateparser; 
@@ -87,6 +91,7 @@ public class OscamMonitor extends TabActivity {
 
 	@Override
 	public void onPause(){
+		wakeLock.release();
 		super.onPause();
 		stopRunning();
 		profiles.saveSettings();
@@ -94,6 +99,7 @@ public class OscamMonitor extends TabActivity {
 	
 	@Override
 	public void onDestroy(){
+		wakeLock.release();
 		super.onDestroy();
 		profiles.saveSettings();
 	}
@@ -144,6 +150,20 @@ public class OscamMonitor extends TabActivity {
 	            
 	        case R.id.mnu_run:     
 	        	startRunning();
+	            break;
+	            
+	        case R.id.mnu_wake: 
+	        	if(item.getTitle().equals("Wake")){
+	        		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	        		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
+	        		wakeLock.acquire();
+	        		item.setTitle("Auto");
+	        		item.setTitleCondensed("Auto");
+	        	}else {
+	        		wakeLock.release();
+	        		item.setTitle("Wake");
+	        		item.setTitleCondensed("Wake");
+	        	}
 	            break;
 	            
 	        case 3:     
