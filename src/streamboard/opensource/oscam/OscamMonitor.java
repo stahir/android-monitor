@@ -701,23 +701,14 @@ public class OscamMonitor extends TabActivity {
 				isServer = true;
 			}
 			
-			if (v == null) {
-				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				if(!isServer){
-					v = vi.inflate(R.layout.listview_row1, null);
-				} else {
-					v = vi.inflate(R.layout.listview_row, null);
-				}
-				
+
+			LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			if(!isServer){
+				v = vi.inflate(R.layout.listview_row1, null);
 			} else {
-				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				if(!isServer){
-					v = vi.inflate(R.layout.listview_row1, null);
-				} else {
-					v = vi.inflate(R.layout.listview_row, null);
-				}
+				v = vi.inflate(R.layout.listview_row, null);
 			}
-			
+
 			
 			Log.i("Refresh", "Refresh " + position);
 			
@@ -745,26 +736,32 @@ public class OscamMonitor extends TabActivity {
 				TextView tt = (TextView) v.findViewById(R.id.toptext);
 				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
 
-				if (tt != null) {
-					if (o.request_answered.length()>0){
-						tt.setText(o.name  + " --> " + o.request_answered);
-					}
-					else
-						tt.setText(o.name);
-				}
-				if(bt != null){
-					if ((o.request_ecmtime > 0) || !(o.request_caid.equals("0000")) ) {
-						bt.setVisibility(0);
-						if (o.request.equals("unknown")) {
-							bt.setText(o.request + " [" + o.request_caid + ":" + o.request_srvid +"]");
+				if(isServer){
+					tt.setText("User: " + o.name);
+					bt.setText(o.protocol + " (type '" + o.type + "')");
+				} else {
+
+
+					if (tt != null) {
+						if (o.request_answered.length()>0){
+							tt.setText(o.name  + " --> " + o.request_answered);
 						} else {
-							bt.setText(o.request);
+							tt.setText(o.name);
 						}
-						icon.setAlpha(255);
-					} else {
-						if(!isServer)
+					}
+					if(bt != null){
+						if ((o.request_ecmtime > 0) || !(o.request_caid.equals("0000")) ) {
+							bt.setVisibility(0);
+							if (o.request.equals("unknown")) {
+								bt.setText(o.request + " [" + o.request_caid + ":" + o.request_srvid +"]");
+							} else {
+								bt.setText(o.request);
+							}
+							icon.setAlpha(255);
+						} else {
 							icon.setAlpha(70);
-						bt.setVisibility(8);
+							bt.setVisibility(8);
+						}
 					}
 				}
 				
