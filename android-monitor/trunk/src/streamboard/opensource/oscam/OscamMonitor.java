@@ -65,6 +65,8 @@ public class OscamMonitor extends TabActivity {
 	
 	// define the wakeLock as attribute
 	PowerManager.WakeLock wakeLock ;
+	PowerManager pm;
+	Boolean wakeIsEnabled = false;
 	
 	static SimpleDateFormat sdf;
 	static SimpleDateFormat dateparser; 
@@ -91,7 +93,10 @@ public class OscamMonitor extends TabActivity {
 
 	@Override
 	public void onPause(){
-		wakeLock.release();
+		if(wakeIsEnabled){
+			wakeLock.release();
+			wakeIsEnabled = false;
+		}
 		super.onPause();
 		stopRunning();
 		profiles.saveSettings();
@@ -99,7 +104,10 @@ public class OscamMonitor extends TabActivity {
 	
 	@Override
 	public void onDestroy(){
-		wakeLock.release();
+		if(wakeIsEnabled){
+			wakeLock.release();
+			wakeIsEnabled = false;
+		}
 		super.onDestroy();
 		profiles.saveSettings();
 	}
@@ -132,6 +140,14 @@ public class OscamMonitor extends TabActivity {
 			mnu_profiles.add(0, i + 4, 0, pnames.get(i));
 		}
 
+		if(wakeIsEnabled){
+			menu.getItem(1).setTitleCondensed("Auto");
+			menu.getItem(1).setTitle("Auto");
+		} else {
+			menu.getItem(1).setTitleCondensed("Wake");
+			menu.getItem(1).setTitle("Wake");
+		}
+		
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -154,13 +170,13 @@ public class OscamMonitor extends TabActivity {
 	            
 	        case R.id.mnu_wake: 
 	        	if(item.getTitle().equals("Wake")){
-	        		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-	        		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
 	        		wakeLock.acquire();
+	        		wakeIsEnabled = true;
 	        		item.setTitle("Auto");
 	        		item.setTitleCondensed("Auto");
-	        	}else {
+	        	} else {
 	        		wakeLock.release();
+	        		wakeIsEnabled = false;
 	        		item.setTitle("Wake");
 	        		item.setTitleCondensed("Wake");
 	        	}
@@ -187,6 +203,9 @@ public class OscamMonitor extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
+		wakeIsEnabled = false;
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		profiles = new ServerProfiles(settings);
