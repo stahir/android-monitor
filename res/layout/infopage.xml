@@ -3,13 +3,6 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
-    <Button 
-    android:layout_width="wrap_content" 
-    android:layout_alignParentBottom="true" 
-    android:layout_centerHorizontal="true" 
-    android:text="Back" 
-    android:layout_height="wrap_content" 
-    android:id="@+id/infopage_btn_back"></Button>
     <TextView 
     android:layout_height="wrap_content" 
     android:layout_width="wrap_content" 
@@ -27,6 +20,15 @@
     android:layout_marginLeft="10dip" 
     android:layout_marginRight="10dip" 
     android:textSize="18dip"></TextView>
+    <ImageView android:layout_marginLeft="10dip" 
+    android:layout_marginBottom="10dip" 
+    android:layout_height="wrap_content" 
+    android:layout_width="wrap_content" 
+    android:id="@+id/infopage_channellogo" 
+    android:src="@drawable/lg_no_logo" 
+    android:layout_below="@+id/infopage_table" 
+    android:layout_alignLeft="@+id/infopage_content" 
+    android:layout_alignRight="@+id/infopage_content" android:layout_marginTop="20dip"></ImageView>
     <TableLayout 
     android:layout_below="@+id/infopage_content" 
     android:layout_height="wrap_content" 
@@ -35,4 +37,12 @@
     android:layout_alignRight="@+id/infopage_content" 
     android:stretchColumns="*"
     android:id="@+id/infopage_table"></TableLayout>
+    <ImageView 
+    android:layout_height="wrap_content" 
+    android:layout_width="wrap_content" 
+    android:src="@drawable/icon" 
+    android:layout_alignParentLeft="true" 
+    android:id="@+id/infopage_icon" 
+    android:layout_marginLeft="10dip" 
+    android:layout_marginTop="10dip"></ImageView>
 </RelativeLayout>
