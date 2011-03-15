@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+    <Button 
+    android:layout_width="wrap_content" 
+    android:layout_alignParentBottom="true" 
+    android:layout_centerHorizontal="true" 
+    android:text="Back" 
+    android:layout_height="wrap_content" 
+    android:id="@+id/infopage_btn_back"></Button>
+    <TextView 
+    android:layout_height="wrap_content" 
+    android:layout_width="wrap_content" 
+    android:layout_alignParentTop="true" 
+    android:layout_centerHorizontal="true" 
+    android:id="@+id/infopage_headline" 
+    android:textSize="20dip" 
+    android:textStyle="bold" android:text="Details" android:layout_marginTop="10dip"></TextView>
+    <TextView 
+    android:layout_height="wrap_content" 
+    android:layout_width="match_parent" 
+    android:id="@+id/infopage_content" 
+    android:layout_below="@+id/infopage_headline" 
+    android:layout_marginTop="10dip" 
+    android:layout_marginLeft="10dip" 
+    android:layout_marginRight="10dip" 
+    android:textSize="18dip"></TextView>
+    <TableLayout 
+    android:layout_below="@+id/infopage_content" 
+    android:layout_height="wrap_content" 
+    android:layout_width="wrap_content" 
+    android:layout_alignLeft="@+id/infopage_content" 
+    android:layout_alignRight="@+id/infopage_content" 
+    android:stretchColumns="*"
+    android:id="@+id/infopage_table"></TableLayout>
+</RelativeLayout>

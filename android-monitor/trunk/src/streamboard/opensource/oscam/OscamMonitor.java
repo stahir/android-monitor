@@ -26,10 +26,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import streamboard.opensource.oscam.http.CustomSSLSocketFactory;
-import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -72,12 +70,13 @@ public class OscamMonitor extends TabActivity {
 	static SimpleDateFormat dateparser; 
 	
 	public static ServerProfiles profiles;
-	public LogoFactory logos;
+	private LogoFactory logos;
+
 	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
 	private TabHost tabHost;
 	private ListView lv1;
-	private ArrayList<StatusClient> clients;
+	
 	private String filter[];
 	private Runnable status;
 	private Thread thread; 
@@ -89,6 +88,8 @@ public class OscamMonitor extends TabActivity {
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
+	
+	public static String infocontent = "";
 
 
 	@Override
@@ -116,6 +117,8 @@ public class OscamMonitor extends TabActivity {
 	public void onResume(){
 		super.onResume();
 		setAppTitle();
+		startRunning();
+		//switchViews(tabHost.getCurrentTab());
 	}
 	
 	@Override
@@ -172,13 +175,9 @@ public class OscamMonitor extends TabActivity {
 	        	if(item.getTitle().equals("Wake")){
 	        		wakeLock.acquire();
 	        		wakeIsEnabled = true;
-	        		item.setTitle("Auto");
-	        		item.setTitleCondensed("Auto");
 	        	} else {
 	        		wakeLock.release();
 	        		wakeIsEnabled = false;
-	        		item.setTitle("Wake");
-	        		item.setTitleCondensed("Wake");
 	        	}
 	            break;
 	            
@@ -292,6 +291,7 @@ public class OscamMonitor extends TabActivity {
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String arg0) {
+				//startRunning();
 				switchViews(tabHost.getCurrentTab());
 			}     
 		}); 
@@ -336,7 +336,7 @@ public class OscamMonitor extends TabActivity {
 		thread.start();
 	}
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
@@ -345,12 +345,14 @@ public class OscamMonitor extends TabActivity {
 				thread.interrupt();
 			}
 		}
+		/*
 		if (lv1 != null){
 			if (lv1.getAdapter() != null){
 				ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
 				aa.clear();
 			}
 		}
+		*/
 	}
 	/*
 	 * switch views depending on given tab index
@@ -398,30 +400,22 @@ public class OscamMonitor extends TabActivity {
 				a.cancel();
 			st.setVisibility(8);
 		}
-		
+
 		lv1.setAdapter(null);
-		
+
 		lv1.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				ClientAdapter clients = (ClientAdapter) parent.getAdapter();
-				StatusClient client = clients.getItem(position);
+				Intent intent = new Intent().setClass(tabHost.getContext(), InfoPage.class);
+				
+				Log.i("Details", "Requested position " + position + " ID ");
+				intent.putExtra("clientid", position);
+				startActivity(intent);
 
-				AlertDialog detailAlert = new AlertDialog.Builder(tabHost.getContext()).create();
-				detailAlert.setTitle("Details");
-				detailAlert.setMessage(client.getSummary());
-				detailAlert.setButton("ok", new DialogInterface.OnClickListener(){
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-					}
-				});
-				detailAlert.show();
 			}
 		}); 
-		
+
 	}
 	
 	private void setStatusbar(){
@@ -477,16 +471,16 @@ public class OscamMonitor extends TabActivity {
 
 		@Override
 		public void run() {
-			if (clients != null){
+			if (((MainApp) getApplication()).getClients() != null){
 				
 				setStatusbar();
 				
 				if (lv1.getAdapter() == null){
-					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , clients));
+					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
 				} else {
 					
 					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
-					ad.refreshItems(clients);
+					ad.refreshItems(((MainApp) getApplication()).getClients());
 					ad.notifyDataSetChanged();
 				}
 				
@@ -636,7 +630,7 @@ public class OscamMonitor extends TabActivity {
 	 * Thread
 	 */
 	private void getStatus(){
-		clients = getStatusClients(filter);
+		((MainApp) getApplication()).setClients(getStatusClients(filter));
 		runOnUiThread(returnRes);
 	}
 	

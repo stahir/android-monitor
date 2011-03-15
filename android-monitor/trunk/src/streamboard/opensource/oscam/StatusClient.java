@@ -43,15 +43,15 @@ public class StatusClient {
 		
 		if(name != null){
 		StringBuilder text = new StringBuilder();
-		text.append("Name:\t\t" + name + "\n");
-		text.append("Protocol:\t" + protocol + "\n");
-		text.append("Request:\t" + request_caid + ":" + request_srvid + "\n");
-		text.append("Channel:\t" + request + "\n");
-		text.append("Login:\t\t" + OscamMonitor.sdf.format(times_login) + "\n");
-		text.append("Online:\t" + OscamMonitor.sec2time(times_online) + "\n");
-		text.append("Idle:\t\t\t" + OscamMonitor.sec2time(times_idle) + "\n");
-		text.append("Connect:\t" + connection_ip + "\n"); 
-		text.append("Status:\t\t" + connection + "\n");
+		text.append("Name:\t\t\t" + name + "\n");
+		text.append("Protocol:\t\t" + protocol + "\n");
+		text.append("Request:\t\t" + request_caid + ":" + request_srvid + "\n");
+		text.append("Channel:\t\t" + request + "\n");
+		text.append("Login:\t\t\t" + OscamMonitor.sdf.format(times_login) + "\n");
+		text.append("Online:\t\t" + OscamMonitor.sec2time(times_online) + "\n");
+		text.append("Idle:\t\t\t\t" + OscamMonitor.sec2time(times_idle) + "\n");
+		text.append("Connect:\t\t" + connection_ip + "\n"); 
+		text.append("Status:\t\t\t" + connection + "\n");
 		
 		return text.toString();
 		} else {
