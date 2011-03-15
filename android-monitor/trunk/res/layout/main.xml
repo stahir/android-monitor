@@ -30,19 +30,19 @@
 			<ListView 
 				android:id="@+id/ListViewClients" 
 				android:layout_width="fill_parent" 
-				android:layout_height="wrap_content"
+				android:layout_height="fill_parent"
 				/>
 					
 			<ListView 
 				android:id="@+id/ListViewReader" 
 				android:layout_width="fill_parent" 
-				android:layout_height="wrap_content" 
+				android:layout_height="fill_parent" 
 				/>
 					
 			<ListView 
 				android:id="@+id/ListViewServer" 
 				android:layout_width="fill_parent" 
-				android:layout_height="wrap_content" />
+				android:layout_height="fill_parent" />
 					
 					
 			<LinearLayout 
