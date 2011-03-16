@@ -41,12 +41,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
@@ -86,7 +84,7 @@ public class OscamMonitor extends TabActivity {
 	
 	private ServerInfo serverinfo = new ServerInfo();
 	private LogInfo loginfo = new LogInfo();
-	
+
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
