@@ -6,8 +6,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DrawFilter;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -151,28 +154,45 @@ public class InfoPage extends Activity {
 		@Override protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
 
+			Log.i("Draw","Density " +  getContext().getResources().getDisplayMetrics().density );
+			float density = getContext().getResources().getDisplayMetrics().density; 
+			
+			DrawFilter drawFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG);
+	        canvas.setDrawFilter(drawFilter);
+	        
 			if(_valid){
 				Log.i("Draw"," " + getWidth() );
 				
 				int thickness = (getWidth()-20) / (_ecmvalues.length +1);
 				int border=((getWidth()-5) - ((_ecmvalues.length) * (thickness)))/2;
-				int startX;
-				int startY;
-				int stopX;
-				int stopY;
+				float startX;
+				float startY;
+				float stopX;
+				float stopY;
 				
 				Paint paint = new Paint();
 				paint.setStyle(Paint.Style.FILL);
+			
 				paint.setColor(Color.rgb(0x00, 0x66, 0xff));
 				paint.setStrokeWidth(thickness);
 				for(int i = 0; i < _ecmvalues.length; i++){
 					
 					startX = border + (i*(thickness+1));
 					stopX = border + (i*(thickness+1));
-					startY = getHeight();
-					stopY=getHeight() - (Integer.parseInt(_ecmvalues[i]) / 100);
-					canvas.drawLine(startX, startY, stopX, stopY, paint);
+					startY = getHeight()* density;
+					stopY = getHeight() - (Integer.parseInt(_ecmvalues[i]) / 100);
+					canvas.drawLine(startX, startY, stopX, stopY/density, paint);
 				}
+				
+				paint.setColor(Color.rgb(0x18, 0x18, 0x18));
+				paint.setStrokeWidth(1);
+				canvas.drawLine(0, 10 * density, getWidth(), 10 * density, paint);
+				canvas.drawLine(0, 20 * density, getWidth(), 20 * density, paint);
+				canvas.drawLine(0, 30 * density, getWidth(), 30 * density, paint);
+				canvas.drawLine(0, 40 * density, getWidth(), 40 * density, paint);
+				canvas.drawLine(0, 50 * density, getWidth(), 50 * density, paint);
+				canvas.drawLine(0, 60 * density, getWidth(), 60 * density, paint);
+			
 			}
 		}
 	}
