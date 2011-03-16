@@ -9,7 +9,7 @@ public class MainApp extends Application{
 	private ArrayList<StatusClient> _clients;
 
 	public MainApp(){
-		_clients = new ArrayList<StatusClient>();
+		//_clients = new ArrayList<StatusClient>();
 	}
 	
 	public ArrayList<StatusClient> getClients(){
