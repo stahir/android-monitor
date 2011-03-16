@@ -26,9 +26,9 @@
     android:layout_width="wrap_content" 
     android:id="@+id/infopage_channellogo" 
     android:src="@drawable/lg_no_logo" 
-    android:layout_below="@+id/infopage_table" 
     android:layout_alignLeft="@+id/infopage_content" 
-    android:layout_alignRight="@+id/infopage_content" android:layout_marginTop="20dip"></ImageView>
+    android:layout_alignRight="@+id/infopage_content" android:layout_marginTop="20dip" android:layout_below="@+id/infopage_chartlayout"></ImageView>
+    <RelativeLayout android:layout_width="wrap_content" android:layout_alignLeft="@+id/infopage_table" android:layout_alignRight="@+id/infopage_table" android:background="#181818" android:id="@+id/infopage_chartlayout" android:layout_below="@+id/infopage_table" android:layout_marginLeft="2dip" android:layout_marginRight="2dip" android:layout_marginTop="2dip" android:layout_height="70dip" android:gravity="center_horizontal"></RelativeLayout>
     <TableLayout 
     android:layout_below="@+id/infopage_content" 
     android:layout_height="wrap_content" 

@@ -3,14 +3,15 @@ package streamboard.opensource.oscam;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
+import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -76,7 +77,11 @@ public class InfoPage extends Activity {
 			addTableRow("Idle:", OscamMonitor.sec2time(client.times_idle));
 			addTableRow("Connect:", client.connection_ip); 
 			addTableRow("Status:", client.connection);
-
+			
+			RelativeLayout container = (RelativeLayout)findViewById(R.id.infopage_chartlayout);
+			View chart = new ChartView(container.getContext(),client.request_ecmhistory);
+			container.addView(chart);
+			
 			if(!isServer){
 				String caidsrvid[] = new String[2];
 				caidsrvid[0] = client.request_caid;
@@ -120,6 +125,56 @@ public class InfoPage extends Activity {
 
 		table.addView(row);
 
+	}
+
+	private class ChartView extends View{
+		
+		private String _values;
+		private boolean _valid = false;
+		private String _ecmvalues[];
+		
+		public ChartView(Context context, String values){
+			super(context);
+			_values = values;
+					
+			if (_values != null){
+				if (_values.length() > 0){
+					_ecmvalues = _values.split(",");
+					if (_ecmvalues.length > 0){
+						_valid = true;
+					}
+				}
+			}
+		}
+	
+		
+		@Override protected void onDraw(Canvas canvas) {
+			super.onDraw(canvas);
+
+			if(_valid){
+				Log.i("Draw"," " + getWidth() );
+				
+				int thickness = (getWidth()-20) / (_ecmvalues.length +1);
+				int border=((getWidth()-5) - ((_ecmvalues.length) * (thickness)))/2;
+				int startX;
+				int startY;
+				int stopX;
+				int stopY;
+				
+				Paint paint = new Paint();
+				paint.setStyle(Paint.Style.FILL);
+				paint.setColor(Color.rgb(0x00, 0x66, 0xff));
+				paint.setStrokeWidth(thickness);
+				for(int i = 0; i < _ecmvalues.length; i++){
+					
+					startX = border + (i*(thickness+1));
+					stopX = border + (i*(thickness+1));
+					startY = getHeight();
+					stopY=getHeight() - (Integer.parseInt(_ecmvalues[i]) / 10);
+					canvas.drawLine(startX, startY, stopX, stopY, paint);
+				}
+			}
+		}
 	}
 
 

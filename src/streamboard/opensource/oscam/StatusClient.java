@@ -17,6 +17,7 @@ public class StatusClient {
 	public String request_caid;
 	public String request_srvid;
 	public Integer request_ecmtime;
+	public String request_ecmhistory;
 	public String request_answered;
 	public String request;
 
@@ -86,9 +87,9 @@ public class StatusClient {
 			
 			request_caid = chkNull(element.getAttribute("caid"));
 			request_srvid = chkNull(element.getAttribute("srvid"));
-			
 			request_ecmtime = chkIntNull(element.getAttribute("ecmtime"));
 			request_answered = chkNull(element.getAttribute("answered"));
+			request_ecmhistory = chkNull(element.getAttribute("ecmhistory"));
 
 			nl = baseelement.getElementsByTagName("times");
 			innernode = nl.item(0);
