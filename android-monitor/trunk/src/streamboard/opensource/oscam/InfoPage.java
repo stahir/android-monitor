@@ -170,7 +170,7 @@ public class InfoPage extends Activity {
 					startX = border + (i*(thickness+1));
 					stopX = border + (i*(thickness+1));
 					startY = getHeight();
-					stopY=getHeight() - (Integer.parseInt(_ecmvalues[i]) / 10);
+					stopY=getHeight() - (Integer.parseInt(_ecmvalues[i]) / 100);
 					canvas.drawLine(startX, startY, stopX, stopY, paint);
 				}
 			}
