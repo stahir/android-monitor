@@ -473,24 +473,22 @@ public class OscamMonitor extends TabActivity {
 		public void run() {
 			if (((MainApp) getApplication()).getClients() != null){
 				
-				setStatusbar();
-				
-				if (lv1.getAdapter() == null){
-					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
-				} else {
-					
-					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
-					ad.refreshItems(((MainApp) getApplication()).getClients());
-					ad.notifyDataSetChanged();
-				}
-				
-				// if log tab is active fill fresh log
-				if (tabHost.getCurrentTab() == 3) {
-					TextView  log = (TextView )findViewById(R.id.logtext);
-					log.setText(loginfo.getLogContent());
-				}
-				
+					setStatusbar();
+
+					if (lv1.getAdapter() == null){
+						lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
+					} else {
+
+						ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
+						ad.refreshItems(((MainApp) getApplication()).getClients());
+						ad.notifyDataSetChanged();
+					}
 			
+			}
+			// if log tab is active fill fresh log
+			if (tabHost.getCurrentTab() == 3) {
+				TextView  log = (TextView )findViewById(R.id.logtext);
+				log.setText(loginfo.getLogContent());
 			}
 		}
 	};
