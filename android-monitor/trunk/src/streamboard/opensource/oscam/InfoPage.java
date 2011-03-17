@@ -144,7 +144,12 @@ public class InfoPage extends Activity {
 				if (_values.length() > 0){
 					_ecmvalues = _values.split(",");
 					if (_ecmvalues.length > 0){
-						_valid = true;
+						int checksum = 0;
+						for(int i = 0; i <_ecmvalues.length; i++)
+							checksum += Integer.parseInt(_ecmvalues[i]);
+						
+						if( checksum > 0)
+							_valid = true;
 					}
 				}
 			}
