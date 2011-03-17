@@ -221,7 +221,8 @@ public class InfoPage extends Activity {
 				
 				paint.setColor(Color.rgb(0xff, 0xff, 0xff));
 				paint.setTextSize((10 * density));
-				canvas.drawText(highestvalue.toString(), textposition - (thickness/2), 20, paint);
+				paint.setTextAlign(Paint.Align.CENTER);
+				canvas.drawText(highestvalue.toString(), textposition, 20, paint);
 				
 			}
 		}
