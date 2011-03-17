@@ -402,7 +402,7 @@ public class OscamMonitor extends TabActivity {
 		}
 
 		lv1.setAdapter(null);
-
+/*
 		lv1.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -415,7 +415,7 @@ public class OscamMonitor extends TabActivity {
 
 			}
 		}); 
-		
+*/		
 	}
 	
 	private void setStatusbar(){
@@ -483,6 +483,8 @@ public class OscamMonitor extends TabActivity {
 						ad.refreshItems(((MainApp) getApplication()).getClients());
 						ad.notifyDataSetChanged();
 					}
+					
+				
 			
 			}
 			// if log tab is active fill fresh log
@@ -740,6 +742,21 @@ public class OscamMonitor extends TabActivity {
 				v = vi.inflate(R.layout.listview_row, null);
 			}
 
+			v.setTag(position);
+			
+			v.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent().setClass(tabHost.getContext(), InfoPage.class);
+					
+					Log.i("Details", "Requested position " + v.getTag() + " ID ");
+					intent.putExtra("clientid", (Integer)v.getTag());
+					startActivity(intent);
+				}
+			
+			});
 			
 			Log.i("Refresh", "Refresh " + position);
 			
