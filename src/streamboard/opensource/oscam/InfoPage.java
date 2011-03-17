@@ -183,12 +183,21 @@ public class InfoPage extends Activity {
 				paint.setStrokeWidth(thickness);
 				
 				int i;
+				Integer highestvalue = 0;
+				float textposition = 0;
 				for(i = 1; i < number_bars + 1; i++){
+					int value = Integer.parseInt(_ecmvalues[i-1]);
 					
-					float barheight = ((Integer.parseInt(_ecmvalues[i-1]) / 100) * density);
+					float barheight = (value / 100) * density;
 					
 					startX = border + (i * (thickness + space)) ;
 					stopX = border + (i * (thickness + space));
+					
+					if (highestvalue < value){
+						highestvalue = value;
+						textposition = stopX;
+					}
+					
 					startY = height;
 					stopY = height - barheight;
 					if (barheight > 30){
@@ -203,13 +212,17 @@ public class InfoPage extends Activity {
 					//Log.i("Draw","stopY " +  stopY + " Height " + height + " value " + ((Integer.parseInt(_ecmvalues[i-1]) / 100) * density));
 				}
 				
-				paint.setColor(Color.rgb(0x18, 0x18, 0x18));
 				paint.setStrokeWidth(1);
-				
+				paint.setColor(Color.rgb(0x18, 0x18, 0x18));
 				float j;
 				for(j = (10 * density); j < height; j += (10 * density)){
 					canvas.drawLine(0, j, getWidth(), j, paint);
 				}
+				
+				paint.setColor(Color.rgb(0xff, 0xff, 0xff));
+				paint.setTextSize((10 * density));
+				canvas.drawText(highestvalue.toString(), textposition - (thickness/2), 20, paint);
+				
 			}
 		}
 	}
