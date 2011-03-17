@@ -154,17 +154,24 @@ public class InfoPage extends Activity {
 		@Override protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
 
-			Log.i("Draw","Density " +  getContext().getResources().getDisplayMetrics().density );
-			float density = getContext().getResources().getDisplayMetrics().density; 
-			
-			DrawFilter drawFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG);
-	        canvas.setDrawFilter(drawFilter);
-	        
-			if(_valid){
-				Log.i("Draw"," " + getWidth() );
+			if(_valid) {
+
+				DrawFilter drawFilter = new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG);
+				canvas.setDrawFilter(drawFilter);
 				
-				int thickness = (getWidth()-20) / (_ecmvalues.length +1);
-				int border=((getWidth()-5) - ((_ecmvalues.length) * (thickness)))/2;
+				float density = getContext().getResources().getDisplayMetrics().density; 
+				int height = getHeight();
+				int width = getWidth();
+				int number_bars = _ecmvalues.length;
+				int space = 1;
+				
+				//Log.i("Draw","Density " +  density );
+				//Log.i("Draw","Width " +  height );
+				//Log.i("Draw","Height " +  width );
+
+				float thickness = ((width - number_bars + 1) / number_bars);
+				float border = (width - (number_bars * space) - (thickness * (number_bars+1)))/2 ;
+				
 				float startX;
 				float startY;
 				float stopX;
@@ -172,27 +179,37 @@ public class InfoPage extends Activity {
 				
 				Paint paint = new Paint();
 				paint.setStyle(Paint.Style.FILL);
-			
 				paint.setColor(Color.rgb(0x00, 0x66, 0xff));
 				paint.setStrokeWidth(thickness);
-				for(int i = 0; i < _ecmvalues.length; i++){
+				
+				int i;
+				for(i = 1; i < number_bars + 1; i++){
 					
-					startX = border + (i*(thickness+1));
-					stopX = border + (i*(thickness+1));
-					startY = getHeight()* density;
-					stopY = getHeight() - (Integer.parseInt(_ecmvalues[i]) / 100);
-					canvas.drawLine(startX, startY, stopX, stopY/density, paint);
+					float barheight = ((Integer.parseInt(_ecmvalues[i-1]) / 100) * density);
+					
+					startX = border + (i * (thickness + space)) ;
+					stopX = border + (i * (thickness + space));
+					startY = height;
+					stopY = height - barheight;
+					if (barheight > 30){
+						paint.setColor(Color.rgb(0xff, 0x66, 0x00));
+						canvas.drawLine(startX, startY, stopX, stopY, paint);
+						paint.setColor(Color.rgb(0x00, 0x66, 0xff));
+						stopY = height - (30 * density);
+						canvas.drawLine(startX, startY, stopX, stopY, paint);
+					} else {
+						canvas.drawLine(startX, startY, stopX, stopY, paint);
+					}
+					//Log.i("Draw","stopY " +  stopY + " Height " + height + " value " + ((Integer.parseInt(_ecmvalues[i-1]) / 100) * density));
 				}
 				
 				paint.setColor(Color.rgb(0x18, 0x18, 0x18));
 				paint.setStrokeWidth(1);
-				canvas.drawLine(0, 10 * density, getWidth(), 10 * density, paint);
-				canvas.drawLine(0, 20 * density, getWidth(), 20 * density, paint);
-				canvas.drawLine(0, 30 * density, getWidth(), 30 * density, paint);
-				canvas.drawLine(0, 40 * density, getWidth(), 40 * density, paint);
-				canvas.drawLine(0, 50 * density, getWidth(), 50 * density, paint);
-				canvas.drawLine(0, 60 * density, getWidth(), 60 * density, paint);
-			
+				
+				float j;
+				for(j = (10 * density); j < height; j += (10 * density)){
+					canvas.drawLine(0, j, getWidth(), j, paint);
+				}
 			}
 		}
 	}
