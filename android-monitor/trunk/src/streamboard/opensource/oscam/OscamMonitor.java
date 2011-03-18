@@ -174,6 +174,8 @@ public class OscamMonitor extends TabActivity {
 	        default:
 	        	if((item.getItemId() - 4) != ((MainApp) getApplication()).getProfiles().getActualIdx()){
 	        		this.stopRunning();
+	        		if (((MainApp) getApplication()).getClients() != null)
+	        			((MainApp) getApplication()).getClients().clear();
 	        		((MainApp) getApplication()).getProfiles().setActiveProfile(item.getItemId() - 4);
 	        		tabHost.setCurrentTab(0);
 	        		this.setAppTitle();
@@ -336,19 +338,16 @@ public class OscamMonitor extends TabActivity {
 			}
 		}
 		running = false;
-		
+		/*
 		if (lv1 != null){
 			if (lv1.getAdapter() != null){
 				ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
 				aa.clear();
 			}
 		}
-		
+		*/
 		statusbar_set = 3;
 		this.setStatusbar();
-		
-		if (((MainApp) getApplication()).getClients() != null)
-			((MainApp) getApplication()).getClients().clear();
 		
 	}
 	/*
