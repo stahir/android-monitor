@@ -210,10 +210,11 @@ public class ServerProfiles {
 	}
 	
 	public Boolean saveSettingsToFile(){
+
+		File root = Environment.getExternalStorageDirectory();
+		String localpath = root + "/OscamMonitor/settings_backup/";
+		File storragedir = new File(localpath);
 		try {
-			File root = Environment.getExternalStorageDirectory();
-			String localpath = root + "/OscamMonitor/settings_backup/";
-			File storragedir = new File(localpath);
 			storragedir.mkdirs();			
 			BufferedWriter bos = new BufferedWriter(new FileWriter(localpath + "settings"));
 			bos.write(settings.getString("serverprofilename", "") + "\n");
@@ -225,10 +226,11 @@ public class ServerProfiles {
 			bos.write(settings.getString("serverrefresh", "") + "\n");
 			bos.flush();
 			bos.close();
-			Log.i("Profiles" ,"written" + root + localpath + "settings");
+			Log.i("Profiles" ,"Settings written " + root + localpath + "settings");
 			return true;
-			
+
 		} catch (Exception e) {
+			Log.i("Profiles" ,"Error write Settings " + root + localpath + "settings");
 			Log.i("Profiles" , e.getStackTrace().toString());
 			return false;
 		}
@@ -254,10 +256,12 @@ public class ServerProfiles {
 			editor.putString("serverrefresh", br.readLine());
 			editor.commit();
 		
-			//loadSettings();
+			Log.i("Profiles" ,"Read Settings complete " + root + localpath + "settings");
 			return true;
 			
 		} catch (Exception e) {
+			Log.i("Profiles" ,"Error read Settings " + root + localpath + "settings");
+			Log.i("Profiles" , e.getStackTrace().toString());
 			return false;
 		}
 	}
