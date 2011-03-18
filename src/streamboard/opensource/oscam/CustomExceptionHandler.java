@@ -42,6 +42,8 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 	
 	private void writeToFile(String stacktrace, String filename) {
 		try {
+			File stactracedir = new File(this._root + this._localPath + "/");
+			stactracedir.mkdirs();
 			BufferedWriter bos = new BufferedWriter(new FileWriter(this._root + this._localPath + "/" + filename));
 			bos.write(stacktrace);
 			bos.flush();
