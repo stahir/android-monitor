@@ -226,11 +226,11 @@ public class ServerProfiles {
 			bos.write(settings.getString("serverrefresh", "") + "\n");
 			bos.flush();
 			bos.close();
-			Log.i("Profiles" ,"Settings written " + root + localpath + "settings");
+			Log.i("Profiles" ,"Settings written " + localpath + "settings");
 			return true;
 
 		} catch (Exception e) {
-			Log.i("Profiles" ,"Error write Settings " + root + localpath + "settings");
+			Log.i("Profiles" ,"Error write Settings " + localpath + "settings");
 			Log.i("Profiles" , e.getStackTrace().toString());
 			return false;
 		}
@@ -256,11 +256,11 @@ public class ServerProfiles {
 			editor.putString("serverrefresh", br.readLine());
 			editor.commit();
 		
-			Log.i("Profiles" ,"Read Settings complete " + root + localpath + "settings");
+			Log.i("Profiles" ,"Read Settings complete " + localpath + "settings");
 			return true;
 			
 		} catch (Exception e) {
-			Log.i("Profiles" ,"Error read Settings " + root + localpath + "settings");
+			Log.i("Profiles" ,"Error read Settings " + localpath + "settings");
 			Log.i("Profiles" , e.getStackTrace().toString());
 			return false;
 		}
