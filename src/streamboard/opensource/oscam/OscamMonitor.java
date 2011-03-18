@@ -62,7 +62,10 @@ public class OscamMonitor extends TabActivity {
 	private ListView lv1;
 	
 	private String filter[];
+	
 	private Runnable status;
+	boolean running = false;
+	
 	private Thread thread; 
 	private Handler handler = new Handler();
 	
@@ -316,8 +319,11 @@ public class OscamMonitor extends TabActivity {
 	}
 	
 	private void startRunning(){
-		thread = new Thread(null, status, "MagentoBackground");
-		thread.start();
+		if(running == false){
+			thread = new Thread(null, status, "MagentoBackground");
+			thread.start();
+		}
+		running = true;
 	}
 	
 	//@SuppressWarnings("unchecked")
@@ -329,6 +335,7 @@ public class OscamMonitor extends TabActivity {
 				thread.interrupt();
 			}
 		}
+		running = false;
 		/*
 		if (lv1 != null){
 			if (lv1.getAdapter() != null){
