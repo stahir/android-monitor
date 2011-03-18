@@ -10,7 +10,6 @@ import android.graphics.DrawFilter;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -80,12 +79,32 @@ public class InfoPage extends Activity {
 			addTableRow("Idle:", OscamMonitor.sec2time(client.times_idle));
 			addTableRow("Connect:", client.connection_ip); 
 			addTableRow("Status:", client.connection);
+		
+			if(client.request_ecmhistory.length() > 0 ){
+				String ecmvalues[] = client.request_ecmhistory.split(",");
+				if(ecmvalues.length > 0) {
+					Integer arr[] = new Integer[ecmvalues.length]; 
+					int total = 0;
+					int numvalues = 0;
+					for(int i=0; i<ecmvalues.length;i++){
+						arr[i] = Integer.parseInt(ecmvalues[i]);
+						total += arr[i];
+						if(arr[i] > 0)
+							numvalues++;
+					}
+
+					if(numvalues > 0 && total > 0){
+						Integer average = total / numvalues;
+						addTableRow("Average:", average.toString() + " ms");
+					}
+
+					RelativeLayout container = (RelativeLayout)findViewById(R.id.infopage_chartlayout);
+					View chart = new ChartView(container.getContext(),arr);
+					container.addView(chart);
+				}
+			}
 			
-			RelativeLayout container = (RelativeLayout)findViewById(R.id.infopage_chartlayout);
-			View chart = new ChartView(container.getContext(),client.request_ecmhistory);
-			container.addView(chart);
-			
-			if(!isServer){
+			if(!isServer && !client.request_srvid.equals("0000")){
 				String caidsrvid[] = new String[2];
 				caidsrvid[0] = client.request_caid;
 				caidsrvid[1] = client.request_srvid;
@@ -132,25 +151,22 @@ public class InfoPage extends Activity {
 
 	private class ChartView extends View{
 		
-		private String _values;
+		private Integer[] _values;
 		private boolean _valid = false;
-		private String _ecmvalues[];
 		
-		public ChartView(Context context, String values){
+		public ChartView(Context context, Integer[] values){
 			super(context);
 			_values = values;
-					
+
 			if (_values != null){
-				if (_values.length() > 0){
-					_ecmvalues = _values.split(",");
-					if (_ecmvalues.length > 0){
-						int checksum = 0;
-						for(int i = 0; i <_ecmvalues.length; i++)
-							checksum += Integer.parseInt(_ecmvalues[i]);
-						
-						if( checksum > 0)
-							_valid = true;
-					}
+				if (_values.length > 0){
+					int checksum = 0;
+					for(int i = 0; i <_values.length; i++)
+						checksum += _values[i];
+
+					if( checksum > 0)
+						_valid = true;
+
 				}
 			}
 		}
@@ -167,7 +183,7 @@ public class InfoPage extends Activity {
 				float density = getContext().getResources().getDisplayMetrics().density; 
 				int height = getHeight();
 				int width = getWidth();
-				int number_bars = _ecmvalues.length;
+				int number_bars = _values.length;
 				int space = 1;
 				
 				//Log.i("Draw","Density " +  density );
@@ -191,7 +207,7 @@ public class InfoPage extends Activity {
 				Integer highestvalue = 0;
 				float textposition = 0;
 				for(i = 1; i < number_bars + 1; i++){
-					int value = Integer.parseInt(_ecmvalues[i-1]);
+					int value = _values[i-1];
 					
 					float barheight = (value / 100) * density;
 					
