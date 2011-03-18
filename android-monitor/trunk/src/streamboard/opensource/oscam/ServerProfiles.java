@@ -1,10 +1,17 @@
 package streamboard.opensource.oscam;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 
 public class ServerProfiles {
@@ -94,8 +101,13 @@ public class ServerProfiles {
 	
 	public void loadSettings() {
 
+		if (settings.getString("serverprofilename", "").length() == 0){
+			Log.i("Profiles" , "Settings Empty - try load from SD Card");
+			if(readSettingsFromFile()){
+				Log.i("Profiles" , "Found and import Settings from SD Card");
+			}
+		}
 		
-
 		String[] profile;
 		String[] serveraddress;
 		String[] serverport;
@@ -191,6 +203,63 @@ public class ServerProfiles {
 
 		editor.commit();
 
+		if(!saveSettingsToFile()){
+			Log.i("Profiles" , "Save to file failed");
+		}
+		
+	}
+	
+	public Boolean saveSettingsToFile(){
+		try {
+			File root = Environment.getExternalStorageDirectory();
+			String localpath = root + "/OscamMonitor/settings_backup/";
+			File storragedir = new File(localpath);
+			storragedir.mkdirs();			
+			BufferedWriter bos = new BufferedWriter(new FileWriter(localpath + "settings"));
+			bos.write(settings.getString("serverprofilename", "") + "\n");
+			bos.write(settings.getString("serveraddress", "") + "\n");
+			bos.write(settings.getString("serverport", "") + "\n");
+			bos.write(settings.getString("serveruser", "") + "\n");
+			bos.write(settings.getString("serverpass", "") + "\n");
+			bos.write(settings.getString("serverssl", "") + "\n");
+			bos.write(settings.getString("serverrefresh", "") + "\n");
+			bos.flush();
+			bos.close();
+			Log.i("Profiles" ,"written" + root + localpath + "settings");
+			return true;
+			
+		} catch (Exception e) {
+			Log.i("Profiles" , e.getStackTrace().toString());
+			return false;
+		}
+	}
+	
+	public Boolean readSettingsFromFile(){
+		File root = Environment.getExternalStorageDirectory();
+		String localpath = root + "/OscamMonitor/settings_backup/";
+		File storragedir = new File(localpath + "settings");
+		if(!storragedir.exists())
+			return false;
+
+		try{
+			Editor editor = settings.edit();
+			BufferedReader br = new BufferedReader(new FileReader(storragedir));
+
+			editor.putString("serverprofilename", br.readLine());
+			editor.putString("serveraddress", br.readLine());
+			editor.putString("serverport", br.readLine());
+			editor.putString("serveruser", br.readLine());
+			editor.putString("serverpass", br.readLine());
+			editor.putString("serverssl", br.readLine());
+			editor.putString("serverrefresh", br.readLine());
+			editor.commit();
+		
+			//loadSettings();
+			return true;
+			
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 }
