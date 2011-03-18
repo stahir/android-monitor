@@ -48,7 +48,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -56,7 +55,6 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class OscamMonitor extends TabActivity {
@@ -69,7 +67,6 @@ public class OscamMonitor extends TabActivity {
 	static SimpleDateFormat sdf;
 	static SimpleDateFormat dateparser; 
 	
-	public static ServerProfiles profiles;
 	private LogoFactory logos;
 
 	
@@ -82,7 +79,6 @@ public class OscamMonitor extends TabActivity {
 	private Thread thread; 
 	private Handler handler = new Handler();
 	
-	private ServerInfo serverinfo = new ServerInfo();
 	private LogInfo loginfo = new LogInfo();
 
 	private Integer statusbar_set = 0;
@@ -100,7 +96,7 @@ public class OscamMonitor extends TabActivity {
 		}
 		super.onPause();
 		stopRunning();
-		profiles.saveSettings();
+		((MainApp) getApplication()).getProfiles().saveSettings();
 	}
 	
 	@Override
@@ -110,7 +106,7 @@ public class OscamMonitor extends TabActivity {
 			wakeIsEnabled = false;
 		}
 		super.onDestroy();
-		profiles.saveSettings();
+		((MainApp) getApplication()).getProfiles().saveSettings();
 	}
 	
 	@Override
@@ -138,7 +134,7 @@ public class OscamMonitor extends TabActivity {
 		
 		mnu_profiles.clear();
 		
-		ArrayList<String> pnames = profiles.getProfileNamesArray();
+		ArrayList<String> pnames = ((MainApp) getApplication()).getProfiles().getProfileNamesArray();
 		for(int i = 0; i < pnames.size(); i++){
 			mnu_profiles.add(0, i + 4, 0, pnames.get(i));
 		}
@@ -186,8 +182,8 @@ public class OscamMonitor extends TabActivity {
 	            break;
 	            
 	        default:
-	        	if((item.getItemId() - 4) != profiles.getActualIdx()){
-	        		profiles.setActiveProfile(item.getItemId() - 4);
+	        	if((item.getItemId() - 4) != ((MainApp) getApplication()).getProfiles().getActualIdx()){
+	        		((MainApp) getApplication()).getProfiles().setActiveProfile(item.getItemId() - 4);
 	        		tabHost.setCurrentTab(0);
 	        		setAppTitle();
 	        		switchViews(0);
@@ -207,7 +203,8 @@ public class OscamMonitor extends TabActivity {
 		wakeIsEnabled = false;
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		profiles = new ServerProfiles(settings);
+		//profiles = new ServerProfiles(settings);
+		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
 		
 		sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
 		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
@@ -220,7 +217,7 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void run() {	
 				getStatus();
-				handler.postDelayed(this, profiles.getActiveProfile().getServerRefreshValue());
+				handler.postDelayed(this, ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerRefreshValue());
 			}
 		};
 
@@ -296,7 +293,7 @@ public class OscamMonitor extends TabActivity {
 			}     
 		}); 
 		
-		if (profiles.noProfileAvail() == false){
+		if (((MainApp) getApplication()).getProfiles().noProfileAvail() == false){
 			// if settings filled - clienttab on start
 			tabHost.setCurrentTab(0);
 			switchViews(0);
@@ -309,7 +306,7 @@ public class OscamMonitor extends TabActivity {
 	}
 
 	public void setAppTitle(){
-		this.setTitle("Oscam Monitor: " + profiles.getActiveProfile().getProfile());
+		this.setTitle("Oscam Monitor: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getProfile());
 	}
 	
 	private void sendcontrol(Integer value){
@@ -327,7 +324,7 @@ public class OscamMonitor extends TabActivity {
 			break;
 		}
 
-		getServerResponse(parameter);
+		((MainApp) getApplication()).getServerResponse(parameter);
 
 	}
 	
@@ -402,20 +399,7 @@ public class OscamMonitor extends TabActivity {
 		}
 
 		lv1.setAdapter(null);
-/*
-		lv1.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
 
-				Intent intent = new Intent().setClass(tabHost.getContext(), InfoPage.class);
-				
-				Log.i("Details", "Requested position " + position + " ID ");
-				intent.putExtra("clientid", position);
-				startActivity(intent);
-
-			}
-		}); 
-*/		
 	}
 	
 	private void setStatusbar(){
@@ -443,6 +427,7 @@ public class OscamMonitor extends TabActivity {
 			
 		});
 	
+		ServerInfo serverinfo = ((MainApp) getApplication()).getServerInfo();
 		switch(statusbar_set){
 		
 		case 0:
@@ -483,9 +468,7 @@ public class OscamMonitor extends TabActivity {
 						ad.refreshItems(((MainApp) getApplication()).getClients());
 						ad.notifyDataSetChanged();
 					}
-					
-				
-			
+
 			}
 			// if log tab is active fill fresh log
 			if (tabHost.getCurrentTab() == 3) {
@@ -494,17 +477,17 @@ public class OscamMonitor extends TabActivity {
 			}
 		}
 	};
-
+/*
 	private String getServerResponse(String parameter){
 		try {
 			
-			String server = profiles.getActiveProfile().getServerAddress();
+			String server = ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerAddress();
 		
 
 			if(server.length() > 0){
 				int port = 80;
 				try{
-					port = profiles.getActiveProfile().getServerPort();
+					port = ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerPort();
 				} catch (Exception e) {}
 				
 				String host = "";
@@ -526,25 +509,25 @@ public class OscamMonitor extends TabActivity {
 					}
 				}
 				
-				String user = profiles.getActiveProfile().getServerUser();
-				String password = profiles.getActiveProfile().getServerPass();
+				String user = ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerUser();
+				String password = ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerPass();
 				
 				StringBuilder uri = new StringBuilder();
-				if (profiles.getActiveProfile().getServerSSL() == true) {
+				if (((MainApp) getApplication()).getProfiles().getActiveProfile().getServerSSL() == true) {
 					uri.append("https://").append(server);
 				} else {
 					uri.append("http://").append(server);
 				}
 	
 				uri.append(parameter);
-				Log.i( "Loader ", uri.toString() + " user: " + user + " pass: " + password + " SSL: " + profiles.getActiveProfile().getServerSSL().toString());
+				Log.i( "Loader ", uri.toString() + " user: " + user + " pass: " + password + " SSL: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerSSL().toString());
 
 				HttpParams httpParameters = new BasicHttpParams();
 				//HttpConnectionParams.setConnectionTimeout(httpParameters, 3000);
 				//HttpConnectionParams.setSoTimeout(httpParameters, 5000);
 				
 				DefaultHttpClient httpclient = new DefaultHttpClient(httpParameters);
-				if (profiles.getActiveProfile().getServerSSL()  == true )
+				if (((MainApp) getApplication()).getProfiles().getActiveProfile().getServerSSL()  == true )
 					httpclient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", new CustomSSLSocketFactory(), port));
 				HttpProtocolParams.setUseExpectContinue(httpclient.getParams(), false);	 
 
@@ -590,10 +573,10 @@ public class OscamMonitor extends TabActivity {
 			return "";
 		}
 	}
-	
+	*/
 	public NodeList getNodes() {
 		try {
-			String httpresponse = getServerResponse("/oscamapi.html?part=status&appendlog=1");
+			String httpresponse = ((MainApp) getApplication()).getServerResponse("/oscamapi.html?part=status&appendlog=1");
 			if(httpresponse.length() > 0){
 				// Create XML-DOM
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -602,11 +585,14 @@ public class OscamMonitor extends TabActivity {
 				doc.getDocumentElement().normalize();			
 
 				// check serverinfo and exit on error
-				serverinfo = new ServerInfo(doc);
+				
+				ServerInfo serverinfo = new ServerInfo(doc);
 				if (serverinfo.hasError()){
 					lasterror = serverinfo.getErrorMessage();
 					runOnUiThread(showError);
 					return null;
+				} else {
+					((MainApp) getApplication()).setServerInfo(serverinfo);
 				}
 				
 				// parsing the Log node

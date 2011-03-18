@@ -11,31 +11,36 @@ import org.w3c.dom.NodeList;
 import android.util.Log;
 
 public class ServerInfo {
-	private String version = "Server Version: unknown";
-	private Date startdate;
-	private Integer uptime;
-	private Boolean haserror = false;
-	private String errormessage = "undefined error";
+	private String _version = "Server Version: unknown";
+	private Integer _revision = 0;
+	private Date _startdate;
+	private Integer _uptime;
+	private Boolean _haserror = false;
+	private String _errormessage = "undefined error";
 	
 	public String getVersion(){
-		return this.version;
+		return this._version;
+	}
+	
+	public Integer getRevision(){
+		return this._revision;
 	}
 	
 	public Date getStartdate(){
-		return this.startdate;
+		return this._startdate;
 	}
 	
 	public Integer getUptime(){
-		return this.uptime;
+		return this._uptime;
 	}
 	
 	public Boolean hasError(){
-		return haserror;
+		return _haserror;
 	}
 	
 	public String getErrorMessage(){
-		if (haserror){
-			return errormessage;
+		if (_haserror){
+			return _errormessage;
 		} else {
 			return "no error";
 		}
@@ -50,26 +55,34 @@ public class ServerInfo {
 		
 		Node rootnode = doc.getElementsByTagName("oscam").item(0);
 		Element rootelement = (Element) rootnode;
-		version = rootelement.getAttribute("version");
+		_version = rootelement.getAttribute("version");
+		
+		if(rootelement.getAttribute("revision") != null && rootelement.getAttribute("revision").length()>0){
+			_revision = Integer.parseInt(rootelement.getAttribute("revision"));
+		} else {
+			_revision = (-1);
+		}
+		Log.i("XML Parsing Server Revision = " , _revision.toString());
+		
 		
 		try {
-			startdate = OscamMonitor.dateparser.parse(rootelement.getAttribute("starttime"));
+			_startdate = OscamMonitor.dateparser.parse(rootelement.getAttribute("starttime"));
 		} catch (ParseException e) {
-			startdate = new Date();
+			_startdate = new Date();
 		}
-		uptime = Integer.parseInt(rootelement.getAttribute("uptime")); 
+		_uptime = Integer.parseInt(rootelement.getAttribute("uptime")); 
 		
 		NodeList nl = doc.getElementsByTagName("error");
 		if (nl != null) {
 			if (nl.getLength() > 0){
-				haserror = true;
+				_haserror = true;
 				Node errornode = nl.item(0);
 				if (errornode.getFirstChild() != null)
-					errormessage = errornode.getFirstChild().getNodeValue();
+					_errormessage = errornode.getFirstChild().getNodeValue();
 			}
 		}
 		} catch (Exception e) {
-			Log.i("XML Pasing Excpetion = " , version + e.getMessage());
+			Log.i("XML Parsing Excpetion = " , _version + e.getMessage());
 		}
 		
 	}
