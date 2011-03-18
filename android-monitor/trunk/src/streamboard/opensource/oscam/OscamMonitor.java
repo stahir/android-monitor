@@ -173,10 +173,11 @@ public class OscamMonitor extends TabActivity {
 	            
 	        default:
 	        	if((item.getItemId() - 4) != ((MainApp) getApplication()).getProfiles().getActualIdx()){
+	        		this.stopRunning();
 	        		((MainApp) getApplication()).getProfiles().setActiveProfile(item.getItemId() - 4);
 	        		tabHost.setCurrentTab(0);
-	        		setAppTitle();
-	        		switchViews(0);
+	        		this.setAppTitle();
+	        		this.switchViews(0);
 	        	}
 	
 	    }
@@ -326,24 +327,29 @@ public class OscamMonitor extends TabActivity {
 		running = true;
 	}
 	
-	//@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
 			if (thread.isAlive()) {
-				// todo: stop is deprecated and causes exception
 				thread.interrupt();
 			}
 		}
 		running = false;
-		/*
+		
 		if (lv1 != null){
 			if (lv1.getAdapter() != null){
 				ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
 				aa.clear();
 			}
 		}
-		*/
+		
+		statusbar_set = 3;
+		this.setStatusbar();
+		
+		if (((MainApp) getApplication()).getClients() != null)
+			((MainApp) getApplication()).getClients().clear();
+		
 	}
 	/*
 	 * switch views depending on given tab index
@@ -437,7 +443,9 @@ public class OscamMonitor extends TabActivity {
 			st.setText("Server Uptime: " + sec2time(serverinfo.getUptime()));
 			statusbar_set=0;
 			break;
-		
+		case 3:
+			st.setText("");
+			break;
 		}
 		  
 	    a_in.reset();
@@ -594,8 +602,13 @@ public class OscamMonitor extends TabActivity {
 
 				// return a list of clientnodes
 				return doc.getElementsByTagName("client");
-			} else
+				
+			} else {
+				// get errormessage from main App
+				lasterror = ((MainApp) getApplication()).getLastError();
+				runOnUiThread(showError);
 				return null;
+			}
 
 		} catch (Exception e) {
 			lasterror = e.getMessage();
@@ -627,9 +640,6 @@ public class OscamMonitor extends TabActivity {
 			//show message
 			Toast.makeText(tabHost.getContext(), lasterror, Toast.LENGTH_LONG).show();
 			lasterror = "";
-			
-			// dismiss progressbar to make UI avail again
-			//oProgressDialog.dismiss();
 		}
 	};
 
@@ -684,7 +694,6 @@ public class OscamMonitor extends TabActivity {
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
 		private String _srvids[];
 		private ArrayList<Bitmap> _logos;
-		
 		private ArrayList<StatusClient> items;
 
 		public ClientAdapter(Context context, int textViewResourceId, ArrayList<StatusClient> items) {

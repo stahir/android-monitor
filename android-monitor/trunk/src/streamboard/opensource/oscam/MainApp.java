@@ -20,7 +20,6 @@ import streamboard.opensource.oscam.http.CustomSSLSocketFactory;
 
 import android.app.Application;
 import android.util.Log;
-import android.widget.Toast;
 
 public class MainApp extends Application{
 
@@ -31,6 +30,10 @@ public class MainApp extends Application{
 
 	public MainApp(){
 		
+	}
+	
+	public String getLastError(){
+		return _lasterror;
 	}
 	
 	public ArrayList<StatusClient> getClients(){
@@ -141,14 +144,12 @@ public class MainApp extends Application{
 		} 
 		catch (SSLException sex) {
 			_lasterror = sex.getMessage();
-			Toast.makeText(getBaseContext(), _lasterror, Toast.LENGTH_LONG).show();
 			Log.i(getClass().getName() , "XML Download SSL Exception", sex);
 			return "";
 		}
 
 		catch (Exception e) {
 			_lasterror = e.getMessage();
-			Toast.makeText(getBaseContext(), _lasterror, Toast.LENGTH_LONG).show();
 			Log.i(getClass().getName() , "XML Download Exception", e);
 			return "";
 		}
