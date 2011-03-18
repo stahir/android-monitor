@@ -1,9 +1,19 @@
 package streamboard.opensource.oscam;
 
+import java.io.StringReader;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import streamboard.opensource.oscam.OscamMonitor.ClientAdapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DrawFilter;
@@ -21,10 +31,22 @@ import android.widget.TextView;
 public class InfoPage extends Activity {
 
 	private LogoFactory logos;
+	private Runnable moredetail;
+	private Thread thread; 
+	private StatusClient _client;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+		// prepare thread
+		moredetail = new Runnable(){
+			@Override
+			public void run() {	
+				getMoreDetail();
+			}
+		};
+		
 		// prepare Channellogos
 		setContentView(R.layout.infopage);
 		logos = new LogoFactory(this.getBaseContext());
@@ -37,51 +59,58 @@ public class InfoPage extends Activity {
 		Log.i("Details", "Array size " + clients.size() + " ID " + idx);
 		
 		if(!(clients.size() == 0)){
-			StatusClient client = clients.get(idx);
+			_client = clients.get(idx);
 			Boolean isServer = false;
 			
 			// identify the server types
-			if (client.type.equals("s") || 
-					client.type.equals("h") || 
-					client.type.equals("m") || 
-					client.type.equals("a")){
+			if (_client.type.equals("s") || 
+					_client.type.equals("h") || 
+					_client.type.equals("m") || 
+					_client.type.equals("a")){
 				isServer = true;
 			}
 
 			ImageView icon = (ImageView)findViewById(R.id.infopage_icon);
-			if ( client.type.equals("r") ) {
+			if ( _client.type.equals("r") ) {
 				icon.setImageResource(R.drawable.readericon);
-			} else if (client.type.equals("p")) {
+			} else if (_client.type.equals("p")) {
 				icon.setImageResource(R.drawable.proxyicon);
-			} else if (client.type.equals("s")) {
+			} else if (_client.type.equals("s")) {
 				icon.setImageResource(R.drawable.servericon);
-			} else if (client.type.equals("h")) {
+			} else if (_client.type.equals("h")) {
 				icon.setImageResource(R.drawable.servericon);
-			} else if (client.type.equals("m")) {
+			} else if (_client.type.equals("m")) {
 				icon.setImageResource(R.drawable.servericon);
-			} else if (client.type.equals("a")) {
+			} else if (_client.type.equals("a")) {
 				icon.setImageResource(R.drawable.servericon);
-			} else if (client.type.equals("c")) {
+			} else if (_client.type.equals("c")) {
 				icon.setImageResource(R.drawable.clienticon);
 			}
 			
 			TextView headline = (TextView)findViewById(R.id.infopage_headline);
-			headline.setText("Details for " + client.name);
+			headline.setText("Details for " + _client.name);
 
-			addTableRow("Name:",client.name);
-			addTableRow("Protocol:", client.protocol);
+			TableLayout table = (TableLayout)findViewById(R.id.infopage_table);
+			
+			addTableRow(table, "Name:",_client.name);
+			addTableRow(table, "Protocol:", _client.protocol);
 			if(!isServer){
-				addTableRow("Request:", client.request_caid + ":" + client.request_srvid);
-				addTableRow("Channel:", client.request);
+				addTableRow(table, "Request:", _client.request_caid + ":" + _client.request_srvid);
+				addTableRow(table, "Channel:", _client.request);
 			}
-			addTableRow("Login:", OscamMonitor.sdf.format(client.times_login));
-			addTableRow("Online:", OscamMonitor.sec2time(client.times_online));
-			addTableRow("Idle:", OscamMonitor.sec2time(client.times_idle));
-			addTableRow("Connect:", client.connection_ip); 
-			addTableRow("Status:", client.connection);
+			addTableRow(table, "Login:", OscamMonitor.sdf.format(_client.times_login));
+			addTableRow(table, "Online:", OscamMonitor.sec2time(_client.times_online));
+			addTableRow(table, "Idle:", OscamMonitor.sec2time(_client.times_idle));
+			addTableRow(table, "Connect:", _client.connection_ip); 
+			addTableRow(table, "Status:", _client.connection);
 		
-			if(client.request_ecmhistory.length() > 0 ){
-				String ecmvalues[] = client.request_ecmhistory.split(",");
+			String caidsrvid[] = new String[2];
+			caidsrvid[0] = _client.request_caid;
+			caidsrvid[1] = _client.request_srvid;
+			Bitmap logo = logos.getLogo(caidsrvid, 0);
+			
+			if(_client.request_ecmhistory.length() > 0 ){
+				String ecmvalues[] = _client.request_ecmhistory.split(",");
 				if(ecmvalues.length > 0) {
 					Integer arr[] = new Integer[ecmvalues.length]; 
 					int total = 0;
@@ -95,31 +124,78 @@ public class InfoPage extends Activity {
 
 					if(numvalues > 0 && total > 0){
 						Integer average = total / numvalues;
-						addTableRow("Average:", average.toString() + " ms");
+						addTableRow(table, "Average:", average.toString() + " ms");
 					}
 
+					View chart = null;
 					RelativeLayout container = (RelativeLayout)findViewById(R.id.infopage_chartlayout);
-					View chart = new ChartView(container.getContext(),arr);
+					if(!isServer && !_client.request_srvid.equals("0000")){
+						chart = new ChartView(container.getContext(), arr, logo);
+					} else {
+						chart = new ChartView(container.getContext(), arr, null);
+					}
 					container.addView(chart);
 				}
 			}
 			
-			if(!isServer && !client.request_srvid.equals("0000")){
-				String caidsrvid[] = new String[2];
-				caidsrvid[0] = client.request_caid;
-				caidsrvid[1] = client.request_srvid;
-	
-				ImageView chanlogo = (ImageView)findViewById(R.id.infopage_channellogo);
-				chanlogo.setImageBitmap(logos.getLogo(caidsrvid, 0));
+			
+		// Request more details
+			if(((MainApp) getApplication()).getServerInfo().getRevision() >= 4835 && _client.type.equals("c")){
+				thread = new Thread(null, moredetail, "MagentoBackground");
+				thread.start();
+				
+				
+				
 			}
 			
 		}
 
 	}
 	
-	private void addTableRow(String parameter, String value){
+	private ClientDetail detail;
+	
+	private void getMoreDetail(){
+		try {
+			String parameter ="/oscamapi.html?part=userstats&label=" + _client.name;
+			String httpresponse = ((MainApp) getApplication()).getServerResponse(parameter);
+			//Log.i("Infopage more Details", "Response: " + httpresponse);
+			// Create XML-DOM
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(new InputSource(new StringReader(httpresponse.toString())));
+			doc.getDocumentElement().normalize();
 
-		TableLayout table = (TableLayout)findViewById(R.id.infopage_table);
+			detail = new ClientDetail(doc);
+			runOnUiThread(returnRes);
+
+
+		} catch (Exception e) {
+			Log.i("Infopage more Details", "Error " + e.getMessage());
+		}
+	}
+	
+	private Runnable returnRes = new Runnable() {
+		@Override
+		public void run() {
+			if (detail != null){
+				TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
+				addTableRow(table, "CW OK:", detail.getCWOK().toString()); 
+				addTableRow(table, "CW not OK:", detail.getCWNOK().toString()); 
+				addTableRow(table, "CW ignored:", detail.getCWIGNORE().toString()); 
+				addTableRow(table, "CW timeout:", detail.getCWTIMEOUT().toString()); 
+				addTableRow(table, "CW cache:", detail.getCWCACHE().toString()); 
+				addTableRow(table, "CW tunneled:", detail.getCWTUNNEL().toString()); 
+				addTableRow(table, "CW rate:", detail.getCWRATE().toString());
+				addTableRow(table, "EMM OK:", detail.getEMMOK().toString()); 
+				addTableRow(table, "EMM not OK:", detail.getEMMNOK().toString());
+				Log.i("Infopage more Details", "getCWOK: " + detail.getCWOK());
+			} else {
+				Log.i("Infopage more Details", "detail is null");
+			}
+		}
+	};
+	
+	private void addTableRow(TableLayout table, String parameter, String value){
 
 		TableRow row = new TableRow(table.getContext());
 		
@@ -153,10 +229,12 @@ public class InfoPage extends Activity {
 		
 		private Integer[] _values;
 		private boolean _valid = false;
+		private Bitmap _logo;
 		
-		public ChartView(Context context, Integer[] values){
+		public ChartView(Context context, Integer[] values, Bitmap logo){
 			super(context);
 			_values = values;
+			_logo = logo;
 
 			if (_values != null){
 				if (_values.length > 0){
@@ -243,7 +321,12 @@ public class InfoPage extends Activity {
 				paint.setColor(Color.rgb(0xff, 0xff, 0xff));
 				paint.setTextSize((10 * density));
 				paint.setTextAlign(Paint.Align.CENTER);
-				canvas.drawText(highestvalue.toString(), textposition, 20, paint);
+				canvas.drawText(highestvalue.toString(), textposition, 50 * density, paint);
+				
+				//_logo = Bitmap.createScaledBitmap(_logo, 40, 30, true);
+				if(_logo != null)
+					canvas.drawBitmap(_logo, 2, 2, paint);
+				
 				
 			}
 		}

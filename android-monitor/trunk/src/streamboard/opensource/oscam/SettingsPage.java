@@ -27,30 +27,33 @@ public class SettingsPage extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		
 	    switch (item.getItemId()) {
 	        case R.id.mnu_nextprofile:     
-	        	if (OscamMonitor.profiles.getActualIdx() < OscamMonitor.profiles.getLastIdx()){
-	        		OscamMonitor.profiles.setActiveProfile(OscamMonitor.profiles.getActualIdx() +1 );
+	        	if (profiles.getActualIdx() < profiles.getLastIdx()){
+	        		profiles.setActiveProfile(profiles.getActualIdx() +1 );
 	        		loadSettings();
 	        	}
 	            break;
 	        case R.id.mnu_prevprofile: 
-	        	if (OscamMonitor.profiles.getActualIdx() > 0){
-	        		OscamMonitor.profiles.setActiveProfile(OscamMonitor.profiles.getActualIdx()-1);
+	        	if (profiles.getActualIdx() > 0){
+	        		profiles.setActiveProfile(profiles.getActualIdx()-1);
 	        		loadSettings();
 	        	}
 	            break;
 	        case R.id.mnu_removeprofile: 
-	        	OscamMonitor.profiles.removeProfileAt(OscamMonitor.profiles.getActualIdx());
-	        	OscamMonitor.profiles.saveSettings();
+	        	profiles.removeProfileAt(profiles.getActualIdx());
+	        	profiles.saveSettings();
 	        	loadSettings();
 	            break;
 	        case R.id.mnu_addprofile: 
-	        	OscamMonitor.profiles.createProfile();
+	        	profiles.createProfile();
 	        	loadSettings();
 	            break;
 	        case R.id.mnu_exitsettings: 
-	        	OscamMonitor.profiles.setActiveProfile(lastindex);
+	        	profiles.setActiveProfile(lastindex);
 	        	finish();
 	            break;
 	
@@ -64,7 +67,7 @@ public class SettingsPage extends Activity {
         super.onCreate(savedInstanceState);
 
         
-        lastindex = OscamMonitor.profiles.getActualIdx();
+        lastindex = ((MainApp) getApplication()).getProfiles().getActualIdx();
     	
     	
         setContentView(R.layout.settingspage);
@@ -86,37 +89,42 @@ public class SettingsPage extends Activity {
     }
     
 	private void loadSettings(){
+		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		
 		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
-		profilefield.setText(OscamMonitor.profiles.getActiveProfile().getProfile());
+		profilefield.setText(profiles.getActiveProfile().getProfile());
 		EditText urlfield = (EditText)findViewById(R.id.editUri1);
-		urlfield.setText(OscamMonitor.profiles.getActiveProfile().getServerAddress());
+		urlfield.setText(profiles.getActiveProfile().getServerAddress());
 		EditText portfield = (EditText)findViewById(R.id.editPort1);
-		portfield.setText(OscamMonitor.profiles.getActiveProfile().getServerPort().toString());
+		portfield.setText(profiles.getActiveProfile().getServerPort().toString());
 		EditText userfield = (EditText)findViewById(R.id.editUser1);
-		userfield.setText(OscamMonitor.profiles.getActiveProfile().getServerUser());
+		userfield.setText(profiles.getActiveProfile().getServerUser());
 		EditText passfield = (EditText)findViewById(R.id.editPass1);
-		passfield.setText(OscamMonitor.profiles.getActiveProfile().getServerPass());
+		passfield.setText(profiles.getActiveProfile().getServerPass());
 		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL1);
-		checkssl.setChecked(OscamMonitor.profiles.getActiveProfile().getServerSSL());
+		checkssl.setChecked(profiles.getActiveProfile().getServerSSL());
 		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh1);
-		selectrefresh.setSelection(OscamMonitor.profiles.getActiveProfile().getServerRefreshIndex());
+		selectrefresh.setSelection(profiles.getActiveProfile().getServerRefreshIndex());
 	}
 	
 	private void saveSettings(){
+		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		
 		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
-		OscamMonitor.profiles.getActiveProfile().setProfile(profilefield.getText().toString());
+		profiles.getActiveProfile().setProfile(profilefield.getText().toString());
 		EditText urlfield = (EditText)findViewById(R.id.editUri1);
-		OscamMonitor.profiles.getActiveProfile().setServerAddress(urlfield.getText().toString());
+		profiles.getActiveProfile().setServerAddress(urlfield.getText().toString());
 		EditText portfield = (EditText)findViewById(R.id.editPort1);
-		OscamMonitor.profiles.getActiveProfile().setServerPort(portfield.getText().toString());
+		profiles.getActiveProfile().setServerPort(portfield.getText().toString());
 		EditText userfield = (EditText)findViewById(R.id.editUser1);
-		OscamMonitor.profiles.getActiveProfile().setServerUser(userfield.getText().toString());
+		profiles.getActiveProfile().setServerUser(userfield.getText().toString());
 		EditText passfield = (EditText)findViewById(R.id.editPass1);
-		OscamMonitor.profiles.getActiveProfile().setServerPass(passfield.getText().toString());
+		profiles.getActiveProfile().setServerPass(passfield.getText().toString());
 		CheckBox checkssl = (CheckBox)findViewById(R.id.checkSSL1);
-		OscamMonitor.profiles.getActiveProfile().setServerSSL(checkssl.isChecked());
+		profiles.getActiveProfile().setServerSSL(checkssl.isChecked());
 		Spinner selectrefresh = (Spinner)findViewById(R.id.selectRefresh1);
-		OscamMonitor.profiles.getActiveProfile().setServerRefreshIndex(selectrefresh.getSelectedItemPosition());
-		OscamMonitor.profiles.saveSettings();
+		profiles.getActiveProfile().setServerRefreshIndex(selectrefresh.getSelectedItemPosition());
+		profiles.saveSettings();
+		
 	}
 }
