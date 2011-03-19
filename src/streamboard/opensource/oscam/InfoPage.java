@@ -209,12 +209,14 @@ public class InfoPage extends Activity {
 				Log.i("Infopage more Details", "detail is null");
 			}
 			if (r_detail != null){
-				TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
-				for(int i = 0; i < r_detail.getEcmList().size(); i++){
-					if (r_detail.getEcmList().get(i).getRc() > 0){
-						addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getRcs());
-					} else {
-						addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getCount().toString());
+				if(r_detail.getEcmList() != null){
+					TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
+					for(int i = 0; i < r_detail.getEcmList().size(); i++){
+						if (r_detail.getEcmList().get(i).getRc() > 0){
+							addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getRcs());
+						} else {
+							addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getCount().toString());
+						}
 					}
 				}
 			}
