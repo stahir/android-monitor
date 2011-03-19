@@ -69,7 +69,7 @@ public class OscamMonitor extends TabActivity {
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
-
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -83,6 +83,7 @@ public class OscamMonitor extends TabActivity {
 		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
 		
 		setContentView(R.layout.main);
+		
 		setAppTitle();
 		
 		// prepare thread
@@ -98,6 +99,8 @@ public class OscamMonitor extends TabActivity {
 		tabHost = getTabHost( );  // The activity TabHost
 		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 		//Intent intent;  // Reusable Intent for each tab
+		
+	
 
 		// we have to do it here because we havn't context before
 		logos = new LogoFactory(this.tabHost.getContext());
@@ -571,7 +574,9 @@ public class OscamMonitor extends TabActivity {
 		}
 	};
 
-	
+
+
+		
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
 		private String _srvids[];
 		private ArrayList<Bitmap> _logos;
@@ -749,5 +754,7 @@ public class OscamMonitor extends TabActivity {
 			return v;
 		}
 	}
+	
+	
 }
 
