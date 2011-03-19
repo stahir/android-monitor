@@ -201,14 +201,28 @@ public class MainApp extends Application{
 	}
 	
 	/*
-	 * convert seconds to 00:00:00 format
+	 * convert seconds to (0 days) 00:00:00 format
 	 */
 	public static String sec2time(long elapsedTime) {       
 		String format = String.format("%%0%dd", 2); 
 		String seconds = String.format(format, elapsedTime % 60);  
 		String minutes = String.format(format, (elapsedTime % 3600) / 60);  
-		String hours = String.format(format, elapsedTime / 3600);  
-		String time =  hours + ":" + minutes + ":" + seconds;  
+		
+		long hrs = elapsedTime / 3600;
+		String hours = "";
+		String days = "";
+		
+		if(hrs < 24){
+			hours = String.format(format, hrs);
+		} else {
+			if (hrs / 24 > 1)
+				days = String.format("%d days ", hrs / 24);
+			else
+				days = String.format("%d day ", hrs / 24);
+			hours = String.format(format, hrs % 24);
+		}
+		
+		String time =  days + hours + ":" + minutes + ":" + seconds;  
 		return time;  
 	}
 	
