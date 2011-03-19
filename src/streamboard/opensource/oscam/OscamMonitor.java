@@ -98,9 +98,7 @@ public class OscamMonitor extends TabActivity {
 		Resources res = getResources(); // Resource object to get Drawables
 		tabHost = getTabHost( );  // The activity TabHost
 		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-		//Intent intent;  // Reusable Intent for each tab
 		
-	
 
 		// we have to do it here because we havn't context before
 		logos = new LogoFactory(this.tabHost.getContext());
@@ -108,7 +106,7 @@ public class OscamMonitor extends TabActivity {
 		// Handler to write Stacktrace on SDcard
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
 
-		
+		//Intent intent;  // Reusable Intent for each tab
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		//intent = new Intent().setClass(this, StatusClientTabpage.class);
 
@@ -617,7 +615,7 @@ public class OscamMonitor extends TabActivity {
 				v = vi.inflate(R.layout.listview_row, null);
 			}
 
-			v.setTag(position);
+			v.setTag(o.name);
 			
 			v.setOnClickListener(new OnClickListener(){
 
@@ -627,7 +625,7 @@ public class OscamMonitor extends TabActivity {
 					Intent intent = new Intent().setClass(tabHost.getContext(), InfoPage.class);
 					
 					Log.i("Details", "Requested position " + v.getTag() + " ID ");
-					intent.putExtra("clientid", (Integer)v.getTag());
+					intent.putExtra("clientid", (String)v.getTag());
 					startActivity(intent);
 				}
 			
