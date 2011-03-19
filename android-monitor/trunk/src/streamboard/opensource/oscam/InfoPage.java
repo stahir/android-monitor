@@ -139,8 +139,8 @@ public class InfoPage extends Activity {
 			}
 			
 			
-		// Request more details
-			if(((MainApp) getApplication()).getServerInfo().getRevision() >= 4835 && _client.type.equals("c")){
+			// Request more details
+			if(((MainApp) getApplication()).getServerInfo().getRevision() >= 4835 && (_client.type.equals("c") || _client.type.equals("r") || _client.type.equals("p"))){
 				thread = new Thread(null, moredetail, "MagentoBackground");
 				thread.start();
 				
@@ -152,20 +152,36 @@ public class InfoPage extends Activity {
 
 	}
 	
-	private ClientDetail detail;
+	private ClientDetail c_detail;
+	private ReaderDetail r_detail;
 	
 	private void getMoreDetail(){
 		try {
-			String parameter ="/oscamapi.html?part=userstats&label=" + _client.name;
+			String parameter = "";
+			if(_client.type.equals("c")){
+				parameter ="/oscamapi.html?part=userstats&label=" + _client.name;
+			} else if(_client.type.equals("r")){
+				parameter ="/oscamapi.html?part=readerstats&label=" + _client.name;
+			} else if(_client.type.equals("p")){
+				parameter ="/oscamapi.html?part=readerstats&label=" + _client.name;
+			}
+			
 			String httpresponse = ((MainApp) getApplication()).getServerResponse(parameter);
-			//Log.i("Infopage more Details", "Response: " + httpresponse);
+
 			// Create XML-DOM
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(new InputSource(new StringReader(httpresponse.toString())));
 			doc.getDocumentElement().normalize();
 
-			detail = new ClientDetail(doc);
+			if(_client.type.equals("c")){
+				c_detail = new ClientDetail(doc);
+			} else if(_client.type.equals("r")){
+				r_detail = new ReaderDetail(doc);
+			} else if(_client.type.equals("p")){
+				r_detail = new ReaderDetail(doc);
+			}
+	
 			runOnUiThread(returnRes);
 
 
@@ -177,20 +193,30 @@ public class InfoPage extends Activity {
 	private Runnable returnRes = new Runnable() {
 		@Override
 		public void run() {
-			if (detail != null){
+			if (c_detail != null){
 				TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
-				addTableRow(table, "CW OK:", detail.getCWOK().toString()); 
-				addTableRow(table, "CW not OK:", detail.getCWNOK().toString()); 
-				addTableRow(table, "CW ignored:", detail.getCWIGNORE().toString()); 
-				addTableRow(table, "CW timeout:", detail.getCWTIMEOUT().toString()); 
-				addTableRow(table, "CW cache:", detail.getCWCACHE().toString()); 
-				addTableRow(table, "CW tunneled:", detail.getCWTUNNEL().toString()); 
-				addTableRow(table, "CW rate:", detail.getCWRATE().toString());
-				addTableRow(table, "EMM OK:", detail.getEMMOK().toString()); 
-				addTableRow(table, "EMM not OK:", detail.getEMMNOK().toString());
-				Log.i("Infopage more Details", "getCWOK: " + detail.getCWOK());
+				addTableRow(table, "CW OK:", c_detail.getCWOK().toString()); 
+				addTableRow(table, "CW not OK:", c_detail.getCWNOK().toString()); 
+				addTableRow(table, "CW ignored:", c_detail.getCWIGNORE().toString()); 
+				addTableRow(table, "CW timeout:", c_detail.getCWTIMEOUT().toString()); 
+				addTableRow(table, "CW cache:", c_detail.getCWCACHE().toString()); 
+				addTableRow(table, "CW tunneled:", c_detail.getCWTUNNEL().toString()); 
+				addTableRow(table, "CW rate:", c_detail.getCWRATE().toString());
+				addTableRow(table, "EMM OK:", c_detail.getEMMOK().toString()); 
+				addTableRow(table, "EMM not OK:", c_detail.getEMMNOK().toString());
+				Log.i("Infopage more Details", "getCWOK: " + c_detail.getCWOK());
 			} else {
 				Log.i("Infopage more Details", "detail is null");
+			}
+			if (r_detail != null){
+				TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
+				for(int i = 0; i < r_detail.getEcmList().size(); i++){
+					if (r_detail.getEcmList().get(i).getRc() > 0){
+						addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getRcs());
+					} else {
+						addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getCount().toString());
+					}
+				}
 			}
 		}
 	};
