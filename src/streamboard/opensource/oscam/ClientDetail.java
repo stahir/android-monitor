@@ -9,6 +9,11 @@ import android.util.Log;
 
 public class ClientDetail {
 
+	public static String URI_PARAMETER = "/oscamapi.html?part=userstats&label=";
+	public static String getUriParameter(String value){
+		return URI_PARAMETER + value;
+	}
+	
 	private Integer _cwok = 0;
 	private Integer _cwnok = 0;
 	private Integer _cwignore = 0;
@@ -80,25 +85,25 @@ public class ClientDetail {
 				if (content.item(i).getFirstChild() != null){
 					//Log.i("ClientDetail", "ID " + i + " Content " + content.item(i).getFirstChild().getNodeValue() );
 					switch(i){
-					case 1:_cwok = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 1:_cwok = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 3:_cwnok = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 3:_cwnok = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 5:_cwignore = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 5:_cwignore = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 7:_cwtimeout = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 7:_cwtimeout = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 9:_cwcache = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 9:_cwcache = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 11:_cwtun = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 11:_cwtun = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 13:_cwlastresptime = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 13:_cwlastresptime = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 15:_emmok = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 15:_emmok = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 17:_emmnok = chkIntNull(content.item(i).getFirstChild().getNodeValue());
+					case 17:_emmnok = MainApp.chkIntNull(content.item(i).getFirstChild().getNodeValue());
 					break;
-					case 19:_cwrate = chkFloatNull(content.item(i).getFirstChild().getNodeValue());
+					case 19:_cwrate = MainApp.chkFloatNull(content.item(i).getFirstChild().getNodeValue());
 					}
 				}
 			}
@@ -108,14 +113,5 @@ public class ClientDetail {
 		}
 	}
 
-	private Integer chkIntNull(String value) {
-		if (value == null) return 0;
-		if (value.length() == 0)return 0;
-		return Integer.parseInt(value);
-	}
-	private Float chkFloatNull(String value) {
-		if (value == null) value = "0";
-		if (value.length() == 0) value = "0";
-		return Float.parseFloat(value);
-	}
+
 }

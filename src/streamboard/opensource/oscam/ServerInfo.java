@@ -66,7 +66,7 @@ public class ServerInfo {
 		
 		
 		try {
-			_startdate = OscamMonitor.dateparser.parse(rootelement.getAttribute("starttime"));
+			_startdate = MainApp.dateparser.parse(rootelement.getAttribute("starttime"));
 		} catch (ParseException e) {
 			_startdate = new Date();
 		}

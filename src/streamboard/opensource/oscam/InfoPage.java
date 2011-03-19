@@ -9,8 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import streamboard.opensource.oscam.OscamMonitor.ClientAdapter;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -98,9 +96,9 @@ public class InfoPage extends Activity {
 				addTableRow(table, "Request:", _client.request_caid + ":" + _client.request_srvid);
 				addTableRow(table, "Channel:", _client.request);
 			}
-			addTableRow(table, "Login:", OscamMonitor.sdf.format(_client.times_login));
-			addTableRow(table, "Online:", OscamMonitor.sec2time(_client.times_online));
-			addTableRow(table, "Idle:", OscamMonitor.sec2time(_client.times_idle));
+			addTableRow(table, "Login:", MainApp.sdf.format(_client.times_login));
+			addTableRow(table, "Online:", MainApp.sec2time(_client.times_online));
+			addTableRow(table, "Idle:", MainApp.sec2time(_client.times_idle));
 			addTableRow(table, "Connect:", _client.connection_ip); 
 			addTableRow(table, "Status:", _client.connection);
 		
@@ -137,15 +135,11 @@ public class InfoPage extends Activity {
 					container.addView(chart);
 				}
 			}
-			
-			
-			// Request more details
+
+			// Request more details in thread to avoid blocking UI
 			if(((MainApp) getApplication()).getServerInfo().getRevision() >= 4835 && (_client.type.equals("c") || _client.type.equals("r") || _client.type.equals("p"))){
 				thread = new Thread(null, moredetail, "MagentoBackground");
 				thread.start();
-				
-				
-				
 			}
 			
 		}
@@ -159,11 +153,11 @@ public class InfoPage extends Activity {
 		try {
 			String parameter = "";
 			if(_client.type.equals("c")){
-				parameter ="/oscamapi.html?part=userstats&label=" + _client.name;
+				parameter = ClientDetail.getUriParameter(_client.name);
 			} else if(_client.type.equals("r")){
-				parameter ="/oscamapi.html?part=readerstats&label=" + _client.name;
+				parameter = ReaderDetail.getUriParameter(_client.name);
 			} else if(_client.type.equals("p")){
-				parameter ="/oscamapi.html?part=readerstats&label=" + _client.name;
+				parameter = ReaderDetail.getUriParameter(_client.name);
 			}
 			
 			String httpresponse = ((MainApp) getApplication()).getServerResponse(parameter);
@@ -211,6 +205,15 @@ public class InfoPage extends Activity {
 			if (r_detail != null){
 				if(r_detail.getEcmList() != null){
 					TableLayout table = (TableLayout)findViewById(R.id.infopage_detail);
+					
+					addTableRow(table, "EMM written:", r_detail.getEmmWritten().toString());
+					addTableRow(table, "EMM skipped:", r_detail.getEmmSkipped().toString());
+					addTableRow(table, "EMM blocked:", r_detail.getEmmBlocked().toString());
+					addTableRow(table, "EMM error:", r_detail.getEmmError().toString());
+					addTableRow(table, "ECM total:", r_detail.getEcmTotal().toString());
+					addTableRow(table, "Last Request:", MainApp.sdf.format(r_detail.getEcmLastRequest()));
+								
+					table = (TableLayout)findViewById(R.id.infopage_detail1);
 					for(int i = 0; i < r_detail.getEcmList().size(); i++){
 						if (r_detail.getEcmList().get(i).getRc() > 0){
 							addTableRow(table, r_detail.getEcmList().get(i).getChannelName(), r_detail.getEcmList().get(i).getRcs());
