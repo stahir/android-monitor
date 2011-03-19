@@ -50,14 +50,21 @@ public class InfoPage extends Activity {
 		logos = new LogoFactory(this.getBaseContext());
 
 		// got selected item index from calling activity
-		int idx = this.getIntent().getIntExtra("clientid", 0);
+		String idx = this.getIntent().getStringExtra("clientid");
 		
 		// get clientarray from global MainApp
 		ArrayList<StatusClient> clients = ((MainApp) getApplication()).getClients();
 		Log.i("Details", "Array size " + clients.size() + " ID " + idx);
 		
 		if(!(clients.size() == 0)){
-			_client = clients.get(idx);
+			
+			for (int i =0; i< clients.size(); i++){
+				if (clients.get(i).name.equals(idx)){
+					_client = clients.get(i);
+					break;
+				}
+			}
+			
 			Boolean isServer = false;
 			
 			// identify the server types
