@@ -29,17 +29,6 @@ public class StatusClient {
 	public Integer connection_port;
 	public String connection;
 	
-	private String chkNull(String value) {
-		if (value == null) return "na";
-		if (value.length() == 0)return "";
-		return value;
-	}
-	private Integer chkIntNull(String value) {
-		if (value == null) return 0;
-		if (value.length() == 0)return 0;
-		return Integer.parseInt(value);
-	}
-	
 	public String getSummary(){
 		
 		if(name != null){
@@ -48,9 +37,9 @@ public class StatusClient {
 		text.append("Protocol:\t\t" + protocol + "\n");
 		text.append("Request:\t\t" + request_caid + ":" + request_srvid + "\n");
 		text.append("Channel:\t\t" + request + "\n");
-		text.append("Login:\t\t\t" + OscamMonitor.sdf.format(times_login) + "\n");
-		text.append("Online:\t\t" + OscamMonitor.sec2time(times_online) + "\n");
-		text.append("Idle:\t\t\t\t" + OscamMonitor.sec2time(times_idle) + "\n");
+		text.append("Login:\t\t\t" + MainApp.sdf.format(times_login) + "\n");
+		text.append("Online:\t\t" + MainApp.sec2time(times_online) + "\n");
+		text.append("Idle:\t\t\t\t" + MainApp.sec2time(times_idle) + "\n");
 		text.append("Connect:\t\t" + connection_ip + "\n"); 
 		text.append("Status:\t\t\t" + connection + "\n");
 		
@@ -70,42 +59,39 @@ public class StatusClient {
 			Element baseelement = (Element) node;
 			Element element = (Element) node;
 
-			type = chkNull(element.getAttribute("type"));
-			name = chkNull(element.getAttribute("name"));
-			protocol = chkNull(element.getAttribute("protocol"));
-			protocolext = chkNull(element.getAttribute("protocolext"));
-			au = chkNull(element.getAttribute("au"));
+			type = MainApp.chkNull(element.getAttribute("type"));
+			name = MainApp.chkNull(element.getAttribute("name"));
+			protocol = MainApp.chkNull(element.getAttribute("protocol"));
+			protocolext = MainApp.chkNull(element.getAttribute("protocolext"));
+			au = MainApp.chkNull(element.getAttribute("au"));
 
 			NodeList nl = baseelement.getElementsByTagName("request");
 			Node innernode = nl.item(0);
 			element = (Element) innernode;
 
-			if (innernode.getFirstChild() != null)
-				request = chkNull(innernode.getFirstChild().getNodeValue());
-			else
-				request = "unknown";
-			
-			request_caid = chkNull(element.getAttribute("caid"));
-			request_srvid = chkNull(element.getAttribute("srvid"));
-			request_ecmtime = chkIntNull(element.getAttribute("ecmtime"));
-			request_answered = chkNull(element.getAttribute("answered"));
-			request_ecmhistory = chkNull(element.getAttribute("ecmhistory"));
+			request = MainApp.getNodeValue(innernode);
+						
+			request_caid = MainApp.chkNull(element.getAttribute("caid"));
+			request_srvid = MainApp.chkNull(element.getAttribute("srvid"));
+			request_ecmtime = MainApp.chkIntNull(element.getAttribute("ecmtime"));
+			request_answered = MainApp.chkNull(element.getAttribute("answered"));
+			request_ecmhistory = MainApp.chkNull(element.getAttribute("ecmhistory"));
 
 			nl = baseelement.getElementsByTagName("times");
 			innernode = nl.item(0);
 			element = (Element) innernode;
 
-			times_login = OscamMonitor.dateparser.parse(chkNull(element.getAttribute("login")));
-			times_online = chkIntNull(element.getAttribute("online"));
-			times_idle = chkIntNull(element.getAttribute("idle"));
+			times_login = MainApp.dateparser.parse(MainApp.chkNull(element.getAttribute("login")));
+			times_online = MainApp.chkIntNull(element.getAttribute("online"));
+			times_idle = MainApp.chkIntNull(element.getAttribute("idle"));
 
 			nl = baseelement.getElementsByTagName("connection");
 			innernode = nl.item(0);
 			element = (Element) innernode;
 
-			connection = chkNull(innernode.getFirstChild().getNodeValue());
-			connection_ip = chkNull(element.getAttribute("ip"));
-			connection_port = chkIntNull(element.getAttribute("port"));
+			connection = MainApp.chkNull(innernode.getFirstChild().getNodeValue());
+			connection_ip = MainApp.chkNull(element.getAttribute("ip"));
+			connection_port = MainApp.chkIntNull(element.getAttribute("port"));
 
 		} catch (Exception e) {
 			//Log.i("XML Pasing Excpetion = " , e.getMessage());

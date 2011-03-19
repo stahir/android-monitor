@@ -1,7 +1,11 @@
 package streamboard.opensource.oscam;
 
 import java.io.DataInputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.SSLException;
 
@@ -15,6 +19,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.w3c.dom.Node;
 
 import streamboard.opensource.oscam.http.CustomSSLSocketFactory;
 
@@ -28,6 +33,10 @@ public class MainApp extends Application{
 	private String _lasterror;
 	private ServerInfo _serverinfo = new ServerInfo();
 
+	
+	public static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
+	public static SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
+	
 	public MainApp(){
 		
 	}
@@ -155,5 +164,52 @@ public class MainApp extends Application{
 		}
 	}
 	
-
+	
+	// some staic functions used globally
+	
+	public static String getNodeValue(Node node){
+		if (node.getFirstChild() != null)
+			return node.getFirstChild().getNodeValue();
+		else
+			return "";
+	}
+	
+	public static String chkNull(String value) {
+		if (value == null) return "na";
+		if (value.length() == 0)return "";
+		return value;
+	}
+	
+	public static Integer chkIntNull(String value) {
+		if (value == null) return 0;
+		if (value.length() == 0)return 0;
+		return Integer.parseInt(value);
+	}
+	
+	public static Float chkFloatNull(String value) {
+		if (value == null) value = "0";
+		if (value.length() == 0) value = "0";
+		return Float.parseFloat(value);
+	}
+	
+	public static Date chkDateNull(String value){
+		try {
+			return dateparser.parse(value);
+		} catch (ParseException e) {
+			return new Date();
+		}
+	}
+	
+	/*
+	 * convert seconds to 00:00:00 format
+	 */
+	public static String sec2time(long elapsedTime) {       
+		String format = String.format("%%0%dd", 2); 
+		String seconds = String.format(format, elapsedTime % 60);  
+		String minutes = String.format(format, (elapsedTime % 3600) / 60);  
+		String hours = String.format(format, elapsedTime / 3600);  
+		String time =  hours + ":" + minutes + ":" + seconds;  
+		return time;  
+	}
+	
 }

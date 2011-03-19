@@ -65,6 +65,15 @@
 		android:layout_width="wrap_content"
 		android:stretchColumns="*"
 		android:layout_marginTop="15dip"></TableLayout>
+	<TableLayout 
+		android:id="@+id/infopage_detail1" 
+		android:layout_alignLeft="@+id/infopage_table" 
+	    android:layout_alignRight="@+id/infopage_table" 
+	    android:layout_below="@+id/infopage_detail" 
+		android:layout_height="wrap_content" 
+		android:layout_width="wrap_content"
+		android:stretchColumns="*"
+		android:layout_marginTop="15dip"></TableLayout>
 	    
 	     </RelativeLayout>
 	 </ScrollView>

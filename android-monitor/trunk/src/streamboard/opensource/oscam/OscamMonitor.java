@@ -1,9 +1,7 @@
 package streamboard.opensource.oscam;
 
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -51,9 +49,6 @@ public class OscamMonitor extends TabActivity {
 	PowerManager pm;
 	Boolean wakeIsEnabled = false;
 	
-	static SimpleDateFormat sdf;
-	static SimpleDateFormat dateparser; 
-	
 	private LogoFactory logos;
 
 	
@@ -74,10 +69,113 @@ public class OscamMonitor extends TabActivity {
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
 	private SubMenu mnu_profiles;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
+		wakeIsEnabled = false;
+		
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		//profiles = new ServerProfiles(settings);
+		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
+		
+		setContentView(R.layout.main);
+		setAppTitle();
+		
+		// prepare thread
+		status = new Runnable(){
+			@Override
+			public void run() {	
+				getStatus();
+				handler.postDelayed(this, ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerRefreshValue());
+			}
+		};
+
+		Resources res = getResources(); // Resource object to get Drawables
+		tabHost = getTabHost( );  // The activity TabHost
+		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
+		//Intent intent;  // Reusable Intent for each tab
+
+		// we have to do it here because we havn't context before
+		logos = new LogoFactory(this.tabHost.getContext());
+		
+		// Handler to write Stacktrace on SDcard
+		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
+
+		
+		// Create an Intent to launch an Activity for the tab (to be reused)
+		//intent = new Intent().setClass(this, StatusClientTabpage.class);
+
+		// Initialize a TabSpec for each tab and add it to the TabHost
+		spec = tabHost.newTabSpec("clients").setIndicator("Clients",
+				res.getDrawable(R.drawable.ic_tab_clients))
+				.setContent(R.id.ListViewClients);
+		tabHost.addTab(spec);
+
+		// Do the same for the other tabs
+		//intent = new Intent().setClass(this, StatusReaderTabpage.class);
+		spec = tabHost.newTabSpec("reader").setIndicator("Reader",
+				res.getDrawable(R.drawable.ic_tab_reader))
+				.setContent(R.id.ListViewReader);
+		tabHost.addTab(spec);
+
+		//intent = new Intent().setClass(this, StatusServerTabpage.class);
+		spec = tabHost.newTabSpec("server").setIndicator("Server",
+				res.getDrawable(R.drawable.ic_tab_server))
+				.setContent(R.id.ListViewServer);
+		tabHost.addTab(spec);
+
+		spec = tabHost.newTabSpec("log").setIndicator("Log",
+				res.getDrawable(R.drawable.ic_tab_log))
+				.setContent(R.id.LogForm);
+		tabHost.addTab(spec);
+		
+		//intent = new Intent().setClass(this, SettingsTabpage.class);
+		spec = tabHost.newTabSpec("controls").setIndicator("Control",
+				res.getDrawable(R.drawable.ic_tab_control))
+				.setContent(R.id.ControlForm);
+		tabHost.addTab(spec);
+		
+		// Set listener for Shutdown button in controls
+		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
+		buttonshutdown.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				sendcontrol(0);
+			}
+		});
+		
+		// Set listener for Restart button in controls
+		final Button buttonrestart = (Button) findViewById(R.id.ctrlServerRestart);
+		buttonrestart.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				sendcontrol(1);
+			}
+		});
+
+		// Set listener for tabchange
+		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
+			@Override
+			public void onTabChanged(String arg0) {
+				//startRunning();
+				switchViews(tabHost.getCurrentTab());
+			}     
+		}); 
+		
+		if (((MainApp) getApplication()).getProfiles().noProfileAvail() == false){
+			// if settings filled - clienttab on start
+			tabHost.setCurrentTab(0);
+			switchViews(0);
+		} else {
+			// if settings not filled - settingstab on start
+			Intent intent = new Intent().setClass(this, SettingsPage.class);
+        	startActivity(intent);
+		}
+		
+	}
 	
-	public static String infocontent = "";
-
-
 	@Override
 	public void onPause(){
 		if(wakeIsEnabled){
@@ -186,117 +284,6 @@ public class OscamMonitor extends TabActivity {
 	    
 	    return true;
 	}
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
-		wakeIsEnabled = false;
-		
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		//profiles = new ServerProfiles(settings);
-		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
-		
-		sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
-		dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
-		
-		setContentView(R.layout.main);
-		setAppTitle();
-		
-		// prepare thread
-		status = new Runnable(){
-			@Override
-			public void run() {	
-				getStatus();
-				handler.postDelayed(this, ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerRefreshValue());
-			}
-		};
-
-		Resources res = getResources(); // Resource object to get Drawables
-		tabHost = getTabHost( );  // The activity TabHost
-		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-		//Intent intent;  // Reusable Intent for each tab
-
-		// we have to do it here because we havn't context before
-		logos = new LogoFactory(this.tabHost.getContext());
-		
-		// Handler to write Stacktrace on SDcard
-		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
-
-		
-		// Create an Intent to launch an Activity for the tab (to be reused)
-		//intent = new Intent().setClass(this, StatusClientTabpage.class);
-
-		// Initialize a TabSpec for each tab and add it to the TabHost
-		spec = tabHost.newTabSpec("clients").setIndicator("Clients",
-				res.getDrawable(R.drawable.ic_tab_clients))
-				.setContent(R.id.ListViewClients);
-		tabHost.addTab(spec);
-
-		// Do the same for the other tabs
-		//intent = new Intent().setClass(this, StatusReaderTabpage.class);
-		spec = tabHost.newTabSpec("reader").setIndicator("Reader",
-				res.getDrawable(R.drawable.ic_tab_reader))
-				.setContent(R.id.ListViewReader);
-		tabHost.addTab(spec);
-
-		//intent = new Intent().setClass(this, StatusServerTabpage.class);
-		spec = tabHost.newTabSpec("server").setIndicator("Server",
-				res.getDrawable(R.drawable.ic_tab_server))
-				.setContent(R.id.ListViewServer);
-		tabHost.addTab(spec);
-
-		spec = tabHost.newTabSpec("log").setIndicator("Log",
-				res.getDrawable(R.drawable.ic_tab_log))
-				.setContent(R.id.LogForm);
-		tabHost.addTab(spec);
-		
-		//intent = new Intent().setClass(this, SettingsTabpage.class);
-		spec = tabHost.newTabSpec("controls").setIndicator("Control",
-				res.getDrawable(R.drawable.ic_tab_control))
-				.setContent(R.id.ControlForm);
-		tabHost.addTab(spec);
-		
-		
-		
-		// Set listener for Shutdown button in controls
-		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
-		buttonshutdown.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				sendcontrol(0);
-			}
-		});
-		
-		// Set listener for Restart button in controls
-		final Button buttonrestart = (Button) findViewById(R.id.ctrlServerRestart);
-		buttonrestart.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				sendcontrol(1);
-			}
-		});
-
-		// Set listener for tabchange
-		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			@Override
-			public void onTabChanged(String arg0) {
-				//startRunning();
-				switchViews(tabHost.getCurrentTab());
-			}     
-		}); 
-		
-		if (((MainApp) getApplication()).getProfiles().noProfileAvail() == false){
-			// if settings filled - clienttab on start
-			tabHost.setCurrentTab(0);
-			switchViews(0);
-		} else {
-			// if settings not filled - settingstab on start
-			Intent intent = new Intent().setClass(this, SettingsPage.class);
-        	startActivity(intent);
-		}
-		
-	}
 
 	public void setAppTitle(){
 		this.setTitle("Oscam Monitor: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getProfile());
@@ -329,7 +316,7 @@ public class OscamMonitor extends TabActivity {
 		running = true;
 	}
 	
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
@@ -348,8 +335,8 @@ public class OscamMonitor extends TabActivity {
 		*/
 		statusbar_set = 3;
 		this.setStatusbar();
-		
 	}
+	
 	/*
 	 * switch views depending on given tab index
 	 */
@@ -435,11 +422,11 @@ public class OscamMonitor extends TabActivity {
 			break;
 		case 1:
 			
-			st.setText("Server Start: " + sdf.format(serverinfo.getStartdate()));
+			st.setText("Server Start: " + MainApp.sdf.format(serverinfo.getStartdate()));
 			statusbar_set++;
 			break;
 		case 2:
-			st.setText("Server Uptime: " + sec2time(serverinfo.getUptime()));
+			st.setText("Server Uptime: " + MainApp.sec2time(serverinfo.getUptime()));
 			statusbar_set=0;
 			break;
 		case 3:
@@ -453,6 +440,9 @@ public class OscamMonitor extends TabActivity {
 	  
 	}
 	
+	/*
+	 * returns from thread to UI thread
+	 */
 	private Runnable returnRes = new Runnable() {
 
 		@Override
@@ -479,6 +469,49 @@ public class OscamMonitor extends TabActivity {
 		}
 	};
 
+	/*
+	 * Thread
+	 */
+	private void getStatus(){
+		((MainApp) getApplication()).setClients(getStatusClients(filter));
+		runOnUiThread(returnRes);
+	}
+	
+	/*
+	 * returns an arraylist of clients depending of types given in array
+	 */
+	public ArrayList<StatusClient> getStatusClients(String type[]){
+		ArrayList<StatusClient> rc = new ArrayList<StatusClient>();
+		StatusClient sc;
+		NodeList nl = getNodes();
+
+		try {
+			if (nl != null) {
+				for (int i = 0; i < nl.getLength(); i++) {
+					Node item = nl.item(i);
+					sc = new StatusClient(item);
+					if (sc != null){
+						// check all given types in array
+						for (int j = 0; j < type.length; j++){
+							if (sc.type.equals(type[j])){
+								rc.add(sc);
+							}
+						}
+					} else {
+						Log.i(" Loop = " , " null sc  -> " + i);
+					}
+				} 
+			} else {
+				return null;
+			}
+			return rc;
+
+		} catch (Exception e) {
+			Log.i("XML Arraylist Excpetion = " , e.getMessage());
+			return null;
+		}
+	}
+	
 	public NodeList getNodes() {
 		try {
 			String httpresponse = ((MainApp) getApplication()).getServerResponse("/oscamapi.html?part=status&appendlog=1");
@@ -523,14 +556,6 @@ public class OscamMonitor extends TabActivity {
 	}
 
 	/*
-	 * Thread
-	 */
-	private void getStatus(){
-		((MainApp) getApplication()).setClients(getStatusClients(filter));
-		runOnUiThread(returnRes);
-	}
-	
-	/*
 	 * Because if we want to show errors from thread we must come back to
 	 * UI context before. Using this by setting lasterror first and call
 	 * this runnable with runOnUiThread(showError); then
@@ -545,53 +570,6 @@ public class OscamMonitor extends TabActivity {
 			lasterror = "";
 		}
 	};
-
-	/*
-	 * returns an arraylist of clients depending of types given in array
-	 */
-	public ArrayList<StatusClient> getStatusClients(String type[]){
-		ArrayList<StatusClient> rc = new ArrayList<StatusClient>();
-		StatusClient sc;
-		NodeList nl = getNodes();
-
-		try {
-			if (nl != null) {
-				for (int i = 0; i < nl.getLength(); i++) {
-					Node item = nl.item(i);
-					sc = new StatusClient(item);
-					if (sc != null){
-						// check all given types in array
-						for (int j = 0; j < type.length; j++){
-							if (sc.type.equals(type[j])){
-								rc.add(sc);
-							}
-						}
-					} else {
-						Log.i(" Loop = " , " null sc  -> " + i);
-					}
-				} 
-			} else {
-				return null;
-			}
-			return rc;
-
-		} catch (Exception e) {
-			Log.i("XML Arraylist Excpetion = " , e.getMessage());
-			return null;
-		}
-	}
-
-	/*
-	 * convert seconds to 00:00:00 format
-	 */
-	static String sec2time(long elapsedTime) {       
-		String format = String.format("%%0%dd", 2); 
-		String seconds = String.format(format, elapsedTime % 60);  
-		String minutes = String.format(format, (elapsedTime % 3600) / 60);  
-		String hours = String.format(format, elapsedTime / 3600);  
-		String time =  hours + ":" + minutes + ":" + seconds;  
-		return time;  
-	}
 
 	
 	public class ClientAdapter extends ArrayAdapter<StatusClient> {
@@ -722,7 +700,6 @@ public class OscamMonitor extends TabActivity {
 					} catch (Exception e){
 
 					}
-				
 
 					// Channellogo
 					ImageView channellogo =(ImageView) v.findViewById(R.id.channellogo);
@@ -769,8 +746,6 @@ public class OscamMonitor extends TabActivity {
 				}
 				this.notifyDataSetChanged();
 			}
-			
-			
 			return v;
 		}
 	}

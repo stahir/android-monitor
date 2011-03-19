@@ -116,16 +116,7 @@
 						android:layout_width="fill_parent" 
 						android:layout_height="wrap_content" 
 						android:stretchColumns="1">
-						<TableRow>				
-						<CheckBox
-			    				android:id="@+id/chkuseSD"
-			    				android:text="Use SD Card for Channel Logos"
-			    				android:layout_width="wrap_content" 
-								android:layout_height="wrap_content" 
-								android:layout_gravity="left"
-								android:layout_span="2"
-								/>
-			    		</TableRow>
+
 			    		<TableRow>	
 			    			<Spinner 
 			    				android:id="@+id/selectRefresh1" 

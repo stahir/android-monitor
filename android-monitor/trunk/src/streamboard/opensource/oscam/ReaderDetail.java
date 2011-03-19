@@ -1,6 +1,7 @@
 package streamboard.opensource.oscam;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -9,16 +10,58 @@ import org.w3c.dom.NodeList;
 
 public class ReaderDetail {
 
+	public static String URI_PARAMETER = "/oscamapi.html?part=readerstats&label=";
+	public static String getUriParameter(String value){
+		return URI_PARAMETER + value;
+	}
+
 	private ArrayList<ECMstat> _ecmlist;
+	private Integer _emmtotwritten;
+	private Integer _emmtotskipped;
+	private Integer _emmtotblocked;
+	private Integer _emmtoterror;
 	
+	private Integer _ecmtotal;
+	private Date _ecmlastaccess;
 	
 	public ArrayList<ECMstat> getEcmList() {
 		return _ecmlist;
 	}
+	public Integer getEmmWritten(){
+		return _emmtotwritten;
+	}
+	public Integer getEmmSkipped(){
+		return _emmtotskipped;
+	}
+	public Integer getEmmBlocked(){
+		return _emmtotblocked;
+	}
+	public Integer getEmmError(){
+		return _emmtoterror;
+	}
+	public Integer getEcmTotal(){
+		return _ecmtotal;
+	}
+	public Date getEcmLastRequest(){
+		return _ecmlastaccess;
+	}
 	
 	public ReaderDetail(Document doc) {
-		NodeList ecmnodes = doc.getElementsByTagName("ecm");
 		
+		NodeList emmnodes = doc.getElementsByTagName("emmstats");
+		Element emmmainnode = (Element)emmnodes.item(0);
+		_emmtotwritten = MainApp.chkIntNull(emmmainnode.getAttribute("totalwritten"));
+		_emmtotskipped = MainApp.chkIntNull(emmmainnode.getAttribute("totalskipped"));
+		_emmtotblocked = MainApp.chkIntNull(emmmainnode.getAttribute("totalblocked"));
+		_emmtoterror = MainApp.chkIntNull(emmmainnode.getAttribute("totalerror"));
+		
+		NodeList ecmmainnodes = doc.getElementsByTagName("ecmstats");
+		Element ecmmainnode = (Element)ecmmainnodes.item(0);
+		_ecmtotal = MainApp.chkIntNull(ecmmainnode.getAttribute("totalecm"));
+		_ecmlastaccess = MainApp.chkDateNull(ecmmainnode.getAttribute("lastaccess"));
+		
+		NodeList ecmnodes = doc.getElementsByTagName("ecm");
+
 		if(ecmnodes.getLength() > 0){
 			_ecmlist = new ArrayList<ECMstat>();
 			for (int i = 0; i < ecmnodes.getLength(); i++) {
@@ -26,15 +69,7 @@ public class ReaderDetail {
 			}
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
 
-	
 	class ECMstat {
 
 		private String _caid;
@@ -45,9 +80,9 @@ public class ReaderDetail {
 		private Integer _lasttime;
 		private Integer _rc;
 		private String _rcs;
-		private String _lastrequest;
+		private Date _lastrequest;
 		private Integer _count;
-		
+
 		public String getCaid(){
 			return _caid;
 		}
@@ -72,42 +107,28 @@ public class ReaderDetail {
 		public String getRcs(){
 			return _rcs;
 		}
-		public String getLastRequest(){
+		public Date getLastRequest(){
 			return _lastrequest;
 		}
 		public Integer getCount(){
 			return _count;
 		}
-		
+
 		public ECMstat(Node node){
 
 			Element element = (Element) node;
-			_caid = chkNull(element.getAttribute("caid"));
-			_provid = chkNull(element.getAttribute("provid"));
-			_srvid = chkNull(element.getAttribute("srvid"));
-			_channelname = chkNull(element.getAttribute("channelname"));
-			_avgtime = chkIntNull(element.getAttribute("avgtime"));
-			_lasttime = chkIntNull(element.getAttribute("lasttime"));
-			_rc = chkIntNull(element.getAttribute("rc"));
-			_rcs = chkNull(element.getAttribute("rcs"));
-			_lastrequest = chkNull(element.getAttribute("lastrequest"));
-			
-			if (node.getFirstChild() != null)
-				_count = chkIntNull(node.getFirstChild().getNodeValue());
-			else
-				_count = 0;
-			
+			_caid = MainApp.chkNull(element.getAttribute("caid"));
+			_provid = MainApp.chkNull(element.getAttribute("provid"));
+			_srvid = MainApp.chkNull(element.getAttribute("srvid"));
+			_channelname = MainApp.chkNull(element.getAttribute("channelname"));
+			_avgtime = MainApp.chkIntNull(element.getAttribute("avgtime"));
+			_lasttime = MainApp.chkIntNull(element.getAttribute("lasttime"));
+			_rc = MainApp.chkIntNull(element.getAttribute("rc"));
+			_rcs = MainApp.chkNull(element.getAttribute("rcs"));
+			_lastrequest = MainApp.chkDateNull(element.getAttribute("lastrequest"));
+			_count = MainApp.chkIntNull(MainApp.getNodeValue(node));
+
 		}
-	
-		private String chkNull(String value) {
-			if (value == null) return "na";
-			if (value.length() == 0)return "";
-			return value;
-		}
-		private Integer chkIntNull(String value) {
-			if (value == null) return 0;
-			if (value.length() == 0)return 0;
-			return Integer.parseInt(value);
-		}
+
 	}
 }
