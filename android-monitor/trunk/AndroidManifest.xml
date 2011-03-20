@@ -50,6 +50,11 @@
 				</activity>
 				
 				<activity 
+					android:name="ControlTabpage"
+					android:label="Control">
+				</activity>
+				
+				<activity 
 					android:name="ListviewActivity">
 				</activity>
 		</application>
