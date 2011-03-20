@@ -59,8 +59,6 @@ public class OscamMonitor extends TabActivity {
 	
 	private Thread thread; 
 	private Handler handler = new Handler();
-	
-	private LogInfo loginfo = new LogInfo();
 
 	private Integer statusbar_set = 0;
 	private String lasterror = "";
@@ -120,10 +118,12 @@ public class OscamMonitor extends TabActivity {
 				.setContent(R.id.ListViewServer);
 		tabHost.addTab(spec);
 
+		intent = new Intent().setClass(this, LogTabpage.class);
 		spec = tabHost.newTabSpec("log").setIndicator("Log",
 				res.getDrawable(R.drawable.ic_tab_log))
-				.setContent(R.id.LogForm);
+				.setContent(intent);
 		tabHost.addTab(spec);
+
 		
 		intent = new Intent().setClass(this, ControlTabpage.class);
 		spec = tabHost.newTabSpec("controls").setIndicator("Control", 
@@ -138,6 +138,7 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void onTabChanged(String arg0) {
 				//startRunning();
+				((MainApp) getApplication()).setActiveTab(tabHost.getCurrentTab());
 				switchViews(tabHost.getCurrentTab());
 			}     
 		}); 
@@ -156,31 +157,36 @@ public class OscamMonitor extends TabActivity {
 	
 	@Override
 	public void onPause(){
+		Log.i(this.getLocalClassName(),"onPause");
 		if(wakeIsEnabled){
 			wakeLock.release();
 			wakeIsEnabled = false;
 		}
-		super.onPause();
+		
 		stopRunning();
 		((MainApp) getApplication()).getProfiles().saveSettings();
+		super.onPause();
 	}
 	
 	@Override
 	public void onDestroy(){
+		Log.i(this.getLocalClassName(),"onDestroy");
 		if(wakeIsEnabled){
 			wakeLock.release();
 			wakeIsEnabled = false;
 		}
-		super.onDestroy();
+		
 		((MainApp) getApplication()).getProfiles().saveSettings();
+		super.onDestroy();
 	}
 	
 	@Override
 	public void onResume(){
-		super.onResume();
+		Log.i(this.getLocalClassName(),"onResume");
 		setAppTitle();
 		//startRunning();
 		switchViews(tabHost.getCurrentTab());
+		super.onResume();
 	}
 	
 	@Override
@@ -301,6 +307,7 @@ public class OscamMonitor extends TabActivity {
 	 */
 	private void switchViews(int tabidx) {
 		
+		
 		stopRunning();
 		
 		switch (tabidx){
@@ -319,15 +326,14 @@ public class OscamMonitor extends TabActivity {
 			break;
 		case 3:
 			// Logpage
-			TextView log = (TextView)findViewById(R.id.logtext);
-			log.setText(loginfo.getLogContent());
+			break;
 		case 4:
 			// controlpage
 			break;
 		}
 
 		// Settingspage doesn't need connect to server
-		if (tabidx < 4) {
+		if (tabidx < 3) {
 			
 			// stop eventually waiting call
 			TextView st = (TextView) findViewById(R.id.serverstatus);
@@ -407,23 +413,17 @@ public class OscamMonitor extends TabActivity {
 		@Override
 		public void run() {
 			if (((MainApp) getApplication()).getClients() != null){
-				
-					setStatusbar();
 
-					if (lv1.getAdapter() == null){
-						lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
-					} else {
+				setStatusbar();
 
-						ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
-						ad.refreshItems(((MainApp) getApplication()).getClients());
-						ad.notifyDataSetChanged();
-					}
+				if (lv1.getAdapter() == null){
+					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
+				} else {
 
-			}
-			// if log tab is active fill fresh log
-			if (tabHost.getCurrentTab() == 3) {
-				TextView  log = (TextView )findViewById(R.id.logtext);
-				log.setText(loginfo.getLogContent());
+					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
+					ad.refreshItems(((MainApp) getApplication()).getClients());
+					ad.notifyDataSetChanged();
+				}
 			}
 		}
 	};
@@ -473,7 +473,7 @@ public class OscamMonitor extends TabActivity {
 	
 	public NodeList getNodes() {
 		try {
-			String httpresponse = ((MainApp) getApplication()).getServerResponse("/oscamapi.html?part=status&appendlog=1");
+			String httpresponse = ((MainApp) getApplication()).getServerResponse("/oscamapi.html?part=status");
 			if(httpresponse.length() > 0){
 				// Create XML-DOM
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -491,9 +491,6 @@ public class OscamMonitor extends TabActivity {
 				} else {
 					((MainApp) getApplication()).setServerInfo(serverinfo);
 				}
-				
-				// parsing the Log node
-				loginfo.parseLogContent(doc);
 
 				// return a list of clientnodes
 				return doc.getElementsByTagName("client");

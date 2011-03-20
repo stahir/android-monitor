@@ -33,6 +33,7 @@ public class MainApp extends Application{
 	private String _lasterror;
 	private ServerInfo _serverinfo = new ServerInfo();
 	private LogoFactory _logos;
+	private Integer _activetab;
 
 	
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
@@ -40,6 +41,14 @@ public class MainApp extends Application{
 	
 	public MainApp(){
 		
+	}
+	
+	public Integer getActiveTab(){
+		return _activetab;
+	}
+	
+	public void setActiveTab(Integer activetab){
+		_activetab = activetab;
 	}
 	
 	public LogoFactory getLogos(){

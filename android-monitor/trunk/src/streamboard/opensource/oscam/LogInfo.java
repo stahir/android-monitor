@@ -6,6 +6,12 @@ import org.w3c.dom.NodeList;
 import android.util.Log;
 
 public class LogInfo {
+	
+	public static String URI_PARAMETER = "/oscamapi.html?part=status&appendlog=1";
+	public static String getUriParameter(String value){
+		return URI_PARAMETER;
+	}
+	
 	private String logcontent;
 	
 	public LogInfo(){
