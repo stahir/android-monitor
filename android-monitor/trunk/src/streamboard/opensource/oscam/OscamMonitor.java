@@ -12,8 +12,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import android.app.TabActivity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -155,9 +157,30 @@ public class OscamMonitor extends TabActivity {
 		
 	}
 	
+	BroadcastReceiver onScreenON = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i("BroadcastReceiver", "Screen ON");
+			if(!running)
+				startRunning();
+		}
+	}; 
+	
+	BroadcastReceiver onScreenOFF = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.i("BroadcastReceiver", "Screen OFF");
+			if(running)
+				stopRunning();
+		}
+	}; 
+	
 	@Override
 	public void onPause(){
+		super.onPause();
 		Log.i(this.getLocalClassName(),"onPause");
+		unregisterReceiver(onScreenON); 
+		unregisterReceiver(onScreenOFF); 
 		if(wakeIsEnabled){
 			wakeLock.release();
 			wakeIsEnabled = false;
@@ -165,7 +188,7 @@ public class OscamMonitor extends TabActivity {
 		
 		stopRunning();
 		((MainApp) getApplication()).getProfiles().saveSettings();
-		super.onPause();
+		
 	}
 	
 	@Override
@@ -182,11 +205,16 @@ public class OscamMonitor extends TabActivity {
 	
 	@Override
 	public void onResume(){
-		Log.i(this.getLocalClassName(),"onResume");
-		setAppTitle();
-		//startRunning();
-		switchViews(tabHost.getCurrentTab());
 		super.onResume();
+		Log.i(this.getLocalClassName(),"onResume");
+		
+		IntentFilter filterON = new IntentFilter(Intent.ACTION_SCREEN_ON);
+		registerReceiver(onScreenON, filterON); 
+		IntentFilter filterOFF = new IntentFilter(Intent.ACTION_SCREEN_OFF);
+		registerReceiver(onScreenOFF, filterOFF);
+		
+		setAppTitle();
+		switchViews(tabHost.getCurrentTab());
 	}
 	
 	@Override
