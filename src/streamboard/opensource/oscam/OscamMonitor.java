@@ -70,6 +70,9 @@ public class OscamMonitor extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// Handler to write Stacktrace on SDcard
+		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
+		
 		setContentView(R.layout.main);
 		
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -97,20 +100,14 @@ public class OscamMonitor extends TabActivity {
 		tabHost = getTabHost( );  // The activity TabHost
 		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
 		
-		// Handler to write Stacktrace on SDcard
-		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
-
 		Intent intent;  // Reusable Intent for each tab
-		// Create an Intent to launch an Activity for the tab (to be reused)
+		
 		//intent = new Intent().setClass(this, StatusClientTabpage.class);
-
-		// Initialize a TabSpec for each tab and add it to the TabHost
 		spec = tabHost.newTabSpec("clients").setIndicator("Clients",
 				res.getDrawable(R.drawable.ic_tab_clients))
 				.setContent(R.id.ListViewClients);
 		tabHost.addTab(spec);
 
-		// Do the same for the other tabs
 		//intent = new Intent().setClass(this, StatusReaderTabpage.class);
 		spec = tabHost.newTabSpec("reader").setIndicator("Reader",
 				res.getDrawable(R.drawable.ic_tab_reader))
