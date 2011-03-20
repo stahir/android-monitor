@@ -216,7 +216,7 @@ public class ServerProfiles {
 		File storragedir = new File(localpath);
 		try {
 			storragedir.mkdirs();			
-			BufferedWriter bos = new BufferedWriter(new FileWriter(localpath + "settings"));
+			BufferedWriter bos = new BufferedWriter(new FileWriter(localpath + "settings"), 20000);
 			bos.write(settings.getString("serverprofilename", "") + "\n");
 			bos.write(settings.getString("serveraddress", "") + "\n");
 			bos.write(settings.getString("serverport", "") + "\n");
