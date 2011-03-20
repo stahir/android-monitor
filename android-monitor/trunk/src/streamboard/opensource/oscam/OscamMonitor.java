@@ -202,8 +202,8 @@ public class OscamMonitor extends TabActivity {
 	public void onResume(){
 		super.onResume();
 		setAppTitle();
-		startRunning();
-		//switchViews(tabHost.getCurrentTab());
+		//startRunning();
+		switchViews(tabHost.getCurrentTab());
 	}
 	
 	@Override
