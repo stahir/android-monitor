@@ -48,9 +48,6 @@ public class OscamMonitor extends TabActivity {
 	PowerManager pm;
 	Boolean wakeIsEnabled = false;
 	
-	private LogoFactory logos;
-
-	
 	public static final String PREFS_NAME = "OscamMonitorPreferences";
 	private TabHost tabHost;
 	private ListView lv1;
@@ -73,6 +70,8 @@ public class OscamMonitor extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		setContentView(R.layout.main);
+		
 		pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "tag");
 		wakeIsEnabled = false;
@@ -80,8 +79,7 @@ public class OscamMonitor extends TabActivity {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
 		
-		setContentView(R.layout.main);
-		
+		// must be after loading profiles
 		setAppTitle();
 		
 		// prepare thread
@@ -89,17 +87,15 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void run() {	
 				getStatus();
-				handler.postDelayed(this, ((MainApp) getApplication()).getProfiles().getActiveProfile().getServerRefreshValue());
+				handler.postDelayed(this, 
+						((MainApp) getApplication()).getProfiles().getActiveProfile()
+						.getServerRefreshValue());
 			}
 		};
 
 		Resources res = getResources(); // Resource object to get Drawables
 		tabHost = getTabHost( );  // The activity TabHost
 		TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-		
-
-		// we have to do it here because we havn't context before
-		logos = new LogoFactory(this.tabHost.getContext());
 		
 		// Handler to write Stacktrace on SDcard
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
@@ -676,11 +672,11 @@ public class OscamMonitor extends TabActivity {
 					caidsrvid[1] = o.request_srvid;
 					if(this._srvids[position] == null){
 						this._srvids[position] = caidsrvid[1];
-						this._logos.add(logos.getLogo(caidsrvid, 0)); // add logo to cache
+						this._logos.add(((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0)); // add logo to cache
 					}
 					if(!this._srvids[position].equals(caidsrvid[1])){
 						this._srvids[position] = caidsrvid[1];
-						this._logos.set(position, logos.getLogo(caidsrvid, 0)); // change logo on cache position
+						this._logos.set(position, ((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0)); // change logo on cache position
 					}
 					channellogo.setImageBitmap(this._logos.get(position));
 
