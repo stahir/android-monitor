@@ -7,6 +7,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import android.os.Environment;
 
@@ -16,6 +19,7 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 	private UncaughtExceptionHandler _defaultUEH;
     private String _localPath;
     private File _root;
+    private SimpleDateFormat stacktraceformat = new SimpleDateFormat("dd_MM_yy_HH_mm", Locale.GERMAN);
     
     public CustomExceptionHandler(String localPath) {
     	this._root = Environment.getExternalStorageDirectory();
@@ -31,7 +35,7 @@ public class CustomExceptionHandler implements UncaughtExceptionHandler {
 		e.printStackTrace(printWriter);
 		String stacktrace = result.toString();
 		printWriter.close();
-		String filename = "OscamMonitor.stacktrace";
+		String filename = "OscamMonitor_" + this.stacktraceformat.format(new Date()) + ".stacktrace";
 
 		if (this._localPath != null) {
 			writeToFile(stacktrace, filename);

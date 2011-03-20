@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 public class InfoPage extends Activity {
 
-	private LogoFactory logos;
 	private Runnable moredetail;
 	private Thread thread; 
 	private StatusClient _client;
@@ -47,7 +46,7 @@ public class InfoPage extends Activity {
 		
 		// prepare Channellogos
 		setContentView(R.layout.infopage);
-		logos = new LogoFactory(this.getBaseContext());
+		
 
 		// got selected item index from calling activity
 		String idx = this.getIntent().getStringExtra("clientid");
@@ -112,7 +111,7 @@ public class InfoPage extends Activity {
 			String caidsrvid[] = new String[2];
 			caidsrvid[0] = _client.request_caid;
 			caidsrvid[1] = _client.request_srvid;
-			Bitmap logo = logos.getLogo(caidsrvid, 0);
+			Bitmap logo = ((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0);
 			
 			if(_client.request_ecmhistory.length() > 0 ){
 				String ecmvalues[] = _client.request_ecmhistory.split(",");

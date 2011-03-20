@@ -32,6 +32,7 @@ public class MainApp extends Application{
 	private ServerProfiles _profiles;
 	private String _lasterror;
 	private ServerInfo _serverinfo = new ServerInfo();
+	private LogoFactory _logos;
 
 	
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
@@ -39,6 +40,12 @@ public class MainApp extends Application{
 	
 	public MainApp(){
 		
+	}
+	
+	public LogoFactory getLogos(){
+		if (_logos == null)
+			_logos = new LogoFactory(this.getApplicationContext());
+		return _logos;
 	}
 	
 	public String getLastError(){
