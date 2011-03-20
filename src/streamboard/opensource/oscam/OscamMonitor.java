@@ -34,7 +34,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TabHost;
@@ -79,7 +78,6 @@ public class OscamMonitor extends TabActivity {
 		wakeIsEnabled = false;
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		//profiles = new ServerProfiles(settings);
 		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
 		
 		setContentView(R.layout.main);
@@ -106,7 +104,7 @@ public class OscamMonitor extends TabActivity {
 		// Handler to write Stacktrace on SDcard
 		Thread.setDefaultUncaughtExceptionHandler(new CustomExceptionHandler("/OscamMonitor/trace"));
 
-		//Intent intent;  // Reusable Intent for each tab
+		Intent intent;  // Reusable Intent for each tab
 		// Create an Intent to launch an Activity for the tab (to be reused)
 		//intent = new Intent().setClass(this, StatusClientTabpage.class);
 
@@ -134,27 +132,13 @@ public class OscamMonitor extends TabActivity {
 				.setContent(R.id.LogForm);
 		tabHost.addTab(spec);
 		
-		//intent = new Intent().setClass(this, SettingsTabpage.class);
-		spec = tabHost.newTabSpec("controls").setIndicator("Control",
+		intent = new Intent().setClass(this, ControlTabpage.class);
+		spec = tabHost.newTabSpec("controls").setIndicator("Control", 
 				res.getDrawable(R.drawable.ic_tab_control))
-				.setContent(R.id.ControlForm);
+				.setContent(intent);
+		
 		tabHost.addTab(spec);
 		
-		// Set listener for Shutdown button in controls
-		final Button buttonshutdown = (Button) findViewById(R.id.ctrlServerShutdown);
-		buttonshutdown.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				sendcontrol(0);
-			}
-		});
-		
-		// Set listener for Restart button in controls
-		final Button buttonrestart = (Button) findViewById(R.id.ctrlServerRestart);
-		buttonrestart.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				sendcontrol(1);
-			}
-		});
 
 		// Set listener for tabchange
 		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
@@ -171,7 +155,7 @@ public class OscamMonitor extends TabActivity {
 			switchViews(0);
 		} else {
 			// if settings not filled - settingstab on start
-			Intent intent = new Intent().setClass(this, SettingsPage.class);
+			intent = new Intent().setClass(this, SettingsPage.class);
         	startActivity(intent);
 		}
 		
@@ -288,25 +272,6 @@ public class OscamMonitor extends TabActivity {
 
 	public void setAppTitle(){
 		this.setTitle("Oscam Monitor: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getProfile());
-	}
-	
-	private void sendcontrol(Integer value){
-
-		String parameter ="";
-		switch(value){
-
-		case 0:
-			//Shutdown
-			parameter="/shutdown.html?action=Shutdown";
-			break;
-		case 1:
-			//Restart
-			parameter="/shutdown.html?action=Restart";
-			break;
-		}
-
-		((MainApp) getApplication()).getServerResponse(parameter);
-
 	}
 	
 	private void startRunning(){
