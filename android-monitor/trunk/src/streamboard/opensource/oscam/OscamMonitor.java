@@ -214,7 +214,8 @@ public class OscamMonitor extends TabActivity {
 		registerReceiver(onScreenOFF, filterOFF);
 		
 		setAppTitle();
-		switchViews(tabHost.getCurrentTab());
+		if(!running)
+			switchViews(tabHost.getCurrentTab());
 	}
 	
 	@Override
@@ -306,10 +307,11 @@ public class OscamMonitor extends TabActivity {
 			thread = new Thread(null, status, "MagentoBackground");
 			thread.start();
 		}
+		statusbar_set = 4;
+		setStatusbar();
 		running = true;
 	}
-	
-	//@SuppressWarnings("unchecked")
+
 	private void stopRunning(){
 		handler.removeCallbacks(status);
 		if(thread != null){
@@ -318,14 +320,6 @@ public class OscamMonitor extends TabActivity {
 			}
 		}
 		running = false;
-		/*
-		if (lv1 != null){
-			if (lv1.getAdapter() != null){
-				ArrayAdapter<StatusClient> aa = (ArrayAdapter<StatusClient>) lv1.getAdapter();
-				aa.clear();
-			}
-		}
-		*/
 		statusbar_set = 3;
 		this.setStatusbar();
 	}
@@ -407,8 +401,10 @@ public class OscamMonitor extends TabActivity {
 		});
 	
 		ServerInfo serverinfo = ((MainApp) getApplication()).getServerInfo();
-		switch(statusbar_set){
 		
+		Log.i("Statusbar" , "value: " + statusbar_set + " version:  " + serverinfo.getVersion());
+		switch(statusbar_set){
+			
 		case 0:
 			st.setText("Server Version: " + serverinfo.getVersion());
 			statusbar_set++;
@@ -425,10 +421,13 @@ public class OscamMonitor extends TabActivity {
 		case 3:
 			st.setText("");
 			break;
+		case 4:
+			st.setText("connecting ...");
+			break;
 		}
 		  
 	    a_in.reset();
-	    st.clearAnimation();
+	    //st.clearAnimation();
 	    st.startAnimation(a_in);
 	  
 	}
@@ -442,7 +441,7 @@ public class OscamMonitor extends TabActivity {
 		public void run() {
 			if (((MainApp) getApplication()).getClients() != null){
 
-				setStatusbar();
+				
 
 				if (lv1.getAdapter() == null){
 					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
@@ -452,6 +451,14 @@ public class OscamMonitor extends TabActivity {
 					ad.refreshItems(((MainApp) getApplication()).getClients());
 					ad.notifyDataSetChanged();
 				}
+				
+				Log.i("returnRes" , "value: " + statusbar_set);
+				
+				if(statusbar_set == 4){
+					statusbar_set = 0;
+				}
+				
+				setStatusbar();
 			}
 		}
 	};

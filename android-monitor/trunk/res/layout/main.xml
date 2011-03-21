@@ -43,10 +43,6 @@
 				android:id="@+id/ListViewServer" 
 				android:layout_width="fill_parent" 
 				android:layout_height="fill_parent" />
-					
-					
-			
-			
 
 		</FrameLayout>
 	</LinearLayout>
