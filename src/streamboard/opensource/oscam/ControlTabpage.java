@@ -8,6 +8,11 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class ControlTabpage extends Activity {
+	
+	
+	private Boolean serverIsReadonly = false;
+	
+	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -28,6 +33,19 @@ public class ControlTabpage extends Activity {
 				sendcontrol(1);
 			}
 		});
+		
+		if(((MainApp) getApplication()).getServerInfo() != null){
+			if (((MainApp) getApplication()).getServerInfo().getReadonly() == 1)
+				this.serverIsReadonly = true;
+		}
+		
+		if(this.serverIsReadonly){
+			buttonrestart.setEnabled(false);
+			buttonshutdown.setEnabled(false);
+		} else {
+			buttonrestart.setEnabled(true);
+			buttonshutdown.setEnabled(true);
+		}
 
     }
     

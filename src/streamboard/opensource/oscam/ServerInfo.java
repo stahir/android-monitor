@@ -13,6 +13,7 @@ import android.util.Log;
 public class ServerInfo {
 	private String _version = "Server Version: unknown";
 	private Integer _revision = 0;
+	private Integer _readonly = 0;
 	private Date _startdate;
 	private Integer _uptime;
 	private Boolean _haserror = false;
@@ -24,6 +25,10 @@ public class ServerInfo {
 	
 	public Integer getRevision(){
 		return this._revision;
+	}
+	
+	public Integer getReadonly(){
+		return this._readonly;
 	}
 	
 	public Date getStartdate(){
@@ -62,6 +67,13 @@ public class ServerInfo {
 		} else {
 			_revision = (-1);
 		}
+		
+		if(rootelement.getAttribute("readonly") != null && rootelement.getAttribute("readonly").length()>0){
+			_readonly = Integer.parseInt(rootelement.getAttribute("readonly"));
+		} else {
+			_readonly = (-1);
+		}
+		
 		Log.i("XML Parsing Server Revision = " , _revision.toString());
 		
 		
