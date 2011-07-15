@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +32,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -41,9 +43,17 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TabHost.OnTabChangeListener;
 
+import android.view.View.OnCreateContextMenuListener;
+
 public class OscamMonitor extends TabActivity {
+	
+	protected static final int CONTEXTMENU_DETAILS = 0;
+	protected static final int CONTEXTMENU_RESTART = 1; 
+	protected static final int CONTEXTMENU_DISABLE = 2; 
+	protected static final int CONTEXTMENU_ENABLE = 3; 
 	
 	// define the wakeLock as attribute
 	PowerManager.WakeLock wakeLock ;
@@ -155,6 +165,7 @@ public class OscamMonitor extends TabActivity {
         	startActivity(intent);
 		}
 		
+			
 	}
 	
 	BroadcastReceiver onScreenON = new BroadcastReceiver() {
@@ -298,6 +309,60 @@ public class OscamMonitor extends TabActivity {
 	    return true;
 	}
 
+	/*
+	@Override
+	public void onCreateContextMenu (ContextMenu menu, View v, ContextMenuInfo menuInfo){
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		StatusClient o = (StatusClient) lv1.getAdapter().getItem(info.position);
+
+		menu.setHeaderTitle("Options for " + o.name);
+		
+		if ( o.type.equals("r") ) {
+			
+		} else if (o.type.equals("p")) {
+			
+		} else if (o.type.equals("s")) {
+			menu.findItem(CONTEXTMENU_RESTART).setEnabled(false);
+			menu.findItem(CONTEXTMENU_DISABLE).setEnabled(false);
+			menu.findItem(CONTEXTMENU_ENABLE).setEnabled(false);
+		} else if (o.type.equals("h")) {
+			menu.findItem(CONTEXTMENU_RESTART).setEnabled(false);
+			menu.findItem(CONTEXTMENU_DISABLE).setEnabled(false);
+			menu.findItem(CONTEXTMENU_ENABLE).setEnabled(false);
+		} else if (o.type.equals("m")) {
+			menu.findItem(CONTEXTMENU_RESTART).setEnabled(false);
+			menu.findItem(CONTEXTMENU_DISABLE).setEnabled(false);
+			menu.findItem(CONTEXTMENU_ENABLE).setEnabled(false);
+		} else if (o.type.equals("a")) {
+			menu.findItem(CONTEXTMENU_RESTART).setEnabled(false);
+			menu.findItem(CONTEXTMENU_DISABLE).setEnabled(false);
+			menu.findItem(CONTEXTMENU_ENABLE).setEnabled(false);
+		} else if (o.type.equals("c")) {
+			
+		}
+			
+		
+		
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem aItem) {
+		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) aItem.getMenuInfo();
+
+		switch (aItem.getItemId()) {
+		case 0:
+			StatusClient client = (StatusClient) lv1.getAdapter().getItem(menuInfo.position);
+			Intent intent = new Intent().setClass(tabHost.getContext(), InfoPage.class);
+			
+			Log.i("Details", "Requested position " + client.name + " ID ");
+			intent.putExtra("clientid", client.name);
+			startActivity(intent);
+			return true; 
+		}
+		return false;
+	} 
+	
+	*/
 	public void setAppTitle(){
 		this.setTitle("Oscam Monitor: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getProfile());
 	}
@@ -354,10 +419,26 @@ public class OscamMonitor extends TabActivity {
 			break;
 		}
 
+		lv1.setAdapter(null);
+		
 		// Settingspage doesn't need connect to server
 		if (tabidx < 3) {
-			
-			// stop eventually waiting call
+			/*
+			lv1.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+				public void  onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)  {
+
+					//Let the menu appear
+					menu.setHeaderTitle("Options");
+					menu.add(Menu.NONE, CONTEXTMENU_DETAILS,1, "Show Details");
+					menu.add(Menu.NONE, CONTEXTMENU_RESTART,2, "Restart");
+					menu.add(Menu.NONE, CONTEXTMENU_DISABLE,3, "Lock");
+					menu.add(Menu.NONE, CONTEXTMENU_ENABLE,4, "Settings");  
+					
+				
+				}
+
+			});
+			*/
 			TextView st = (TextView) findViewById(R.id.serverstatus);
 			st.setVisibility(0);
 			statusbar_set = 0;
@@ -371,7 +452,7 @@ public class OscamMonitor extends TabActivity {
 			st.setVisibility(8);
 		}
 
-		lv1.setAdapter(null);
+		
 
 	}
 	
@@ -451,6 +532,8 @@ public class OscamMonitor extends TabActivity {
 					ad.refreshItems(((MainApp) getApplication()).getClients());
 					ad.notifyDataSetChanged();
 				}
+				
+				
 				
 				Log.i("returnRes" , "value: " + statusbar_set);
 				
@@ -712,10 +795,10 @@ public class OscamMonitor extends TabActivity {
 					// Protocol icon
 					ImageView icon1 =(ImageView) v.findViewById(R.id.icon1);
 
-					if (o.protocol.equals("camd35")){
+					if (o.protocol.contains("camd35")){
 						icon1.setImageResource(R.drawable.ic_status_c3);
 						icon1.setAlpha(255);
-					} else if (o.protocol.equals("newcamd")){
+					} else if (o.protocol.contains("newcamd")){
 						icon1.setImageResource(R.drawable.ic_status_nc);
 						icon1.setAlpha(255);
 					} else if (o.protocol.contains("cccam")){
