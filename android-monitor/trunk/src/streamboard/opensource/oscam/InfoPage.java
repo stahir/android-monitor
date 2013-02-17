@@ -52,7 +52,7 @@ public class InfoPage extends Activity {
 		String idx = this.getIntent().getStringExtra("clientid");
 		
 		// get clientarray from global MainApp
-		ArrayList<StatusClient> clients = ((MainApp) getApplication()).getClients();
+		ArrayList<StatusClient> clients = MainApp.instance.getClients();
 		Log.i("Details", "Array size " + clients.size() + " ID " + idx);
 		
 		if(!(clients.size() == 0)){
@@ -111,7 +111,7 @@ public class InfoPage extends Activity {
 			String caidsrvid[] = new String[2];
 			caidsrvid[0] = _client.request_caid;
 			caidsrvid[1] = _client.request_srvid;
-			Bitmap logo = ((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0);
+			Bitmap logo = MainApp.instance.getLogos().getLogo(caidsrvid, 0);
 			
 			if(_client.request_ecmhistory.length() > 0 ){
 				String ecmvalues[] = _client.request_ecmhistory.split(",");
@@ -143,7 +143,7 @@ public class InfoPage extends Activity {
 			}
 
 			// Request more details in thread to avoid blocking UI
-			if(((MainApp) getApplication()).getServerInfo().getRevision() >= 4835 && (_client.type.equals("c") || _client.type.equals("r") || _client.type.equals("p"))){
+			if(MainApp.instance.getServerInfo().getRevision() >= 4835 && (_client.type.equals("c") || _client.type.equals("r") || _client.type.equals("p"))){
 				thread = new Thread(null, moredetail, "MagentoBackground");
 				thread.start();
 			}
@@ -166,7 +166,7 @@ public class InfoPage extends Activity {
 				parameter = ReaderDetail.getUriParameter(_client.name);
 			}
 			
-			String httpresponse = ((MainApp) getApplication()).getServerResponse(parameter);
+			String httpresponse = MainApp.instance.getServerResponse(parameter);
 
 			// Create XML-DOM
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

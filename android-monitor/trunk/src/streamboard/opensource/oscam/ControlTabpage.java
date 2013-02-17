@@ -34,8 +34,8 @@ public class ControlTabpage extends Activity {
 			}
 		});
 		
-		if(((MainApp) getApplication()).getServerInfo() != null){
-			if (((MainApp) getApplication()).getServerInfo().getReadonly() == 1)
+		if(MainApp.instance.getServerInfo() != null){
+			if (MainApp.instance.getServerInfo().getReadonly() == 1)
 				this.serverIsReadonly = true;
 		}
 		
@@ -65,7 +65,7 @@ public class ControlTabpage extends Activity {
 		}
 
 		Log.i("Controlpage","send: " + parameter);
-		((MainApp) getApplication()).getServerResponse(parameter);
+		MainApp.instance.getServerResponse(parameter);
 
 	}
 }
