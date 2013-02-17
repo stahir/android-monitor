@@ -33,14 +33,15 @@ public class MainApp extends Application{
 	private String _lasterror;
 	private ServerInfo _serverinfo = new ServerInfo();
 	private LogoFactory _logos;
-	private Integer _activetab;
+	private Integer _activetab = 0;
 
 	
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.GERMAN);
 	public static SimpleDateFormat dateparser = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ssZ"); 
+	public static MainApp instance;
 	
 	public MainApp(){
-		
+		instance = this;
 	}
 	
 	public Integer getActiveTab(){

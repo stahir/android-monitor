@@ -10,7 +10,6 @@ import org.xml.sax.InputSource;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -19,7 +18,6 @@ public class LogTabpage extends Activity {
 	private LogInfo _loginfo = new LogInfo();
 	private Runnable receivelog;
 	private Thread thread; 
-	private Handler handler = new Handler();
 	private boolean running = false;
 	
 	@Override
@@ -46,12 +44,18 @@ public class LogTabpage extends Activity {
 		receivelog = new Runnable(){
 			@Override
 			public void run() {	
-				if(((MainApp) getApplication()).getActiveTab() == 3){
-					getLog();
+				while(running){
+					if(MainApp.instance.getActiveTab() == 3){
+						getLog();
+						try {
+							Thread.sleep(MainApp.instance.getProfiles().getActiveProfile().getServerRefreshValue());
+						} catch (InterruptedException e) {}
+					} else {
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {}
+					}
 				}
-				handler.postDelayed(this, 
-						((MainApp) getApplication()).getProfiles().getActiveProfile()
-						.getServerRefreshValue());
 
 			}
 		};
@@ -63,27 +67,26 @@ public class LogTabpage extends Activity {
 	
 	private void startRunning(){
 		if(running == false){
+			running = true;
 			thread = new Thread(null, receivelog, "MagentoBackground");
 			thread.start();
 		}
-		running = true;
 	}
 
 	private void stopRunning(){
-		handler.removeCallbacks(receivelog);
+		running = false;
 		if(thread != null){
 			if (thread.isAlive()) {
 				thread.interrupt();
 			}
-		}
-		running = false;
+		}		
 	}
 	
 	private void getLog(){
 		try {
 			String parameter = "";
 			parameter = LogInfo.getUriParameter(null);
-			String httpresponse = ((MainApp) getApplication()).getServerResponse(parameter);
+			String httpresponse = MainApp.instance.getServerResponse(parameter);
 
 			// Create XML-DOM
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

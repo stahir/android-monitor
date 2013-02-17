@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +31,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -43,10 +41,8 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TabHost.OnTabChangeListener;
 
-import android.view.View.OnCreateContextMenuListener;
 
 public class OscamMonitor extends TabActivity {
 	
@@ -90,7 +86,7 @@ public class OscamMonitor extends TabActivity {
 		wakeIsEnabled = false;
 		
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		((MainApp) getApplication()).setProfiles(new ServerProfiles(settings));
+		MainApp.instance.setProfiles(new ServerProfiles(settings));
 		
 		// must be after loading profiles
 		setAppTitle();
@@ -101,7 +97,7 @@ public class OscamMonitor extends TabActivity {
 			public void run() {	
 				getStatus();
 				handler.postDelayed(this, 
-						((MainApp) getApplication()).getProfiles().getActiveProfile()
+						MainApp.instance.getProfiles().getActiveProfile()
 						.getServerRefreshValue());
 			}
 		};
@@ -150,12 +146,12 @@ public class OscamMonitor extends TabActivity {
 			@Override
 			public void onTabChanged(String arg0) {
 				//startRunning();
-				((MainApp) getApplication()).setActiveTab(tabHost.getCurrentTab());
+				MainApp.instance.setActiveTab(tabHost.getCurrentTab());
 				switchViews(tabHost.getCurrentTab());
 			}     
 		}); 
 		
-		if (((MainApp) getApplication()).getProfiles().noProfileAvail() == false){
+		if (MainApp.instance.getProfiles().noProfileAvail() == false){
 			// if settings filled - clienttab on start
 			tabHost.setCurrentTab(0);
 			switchViews(0);
@@ -198,7 +194,7 @@ public class OscamMonitor extends TabActivity {
 		}
 		
 		stopRunning();
-		((MainApp) getApplication()).getProfiles().saveSettings();
+		MainApp.instance.getProfiles().saveSettings();
 		
 	}
 	
@@ -210,7 +206,7 @@ public class OscamMonitor extends TabActivity {
 			wakeIsEnabled = false;
 		}
 		
-		((MainApp) getApplication()).getProfiles().saveSettings();
+		MainApp.instance.getProfiles().saveSettings();
 		super.onDestroy();
 	}
 	
@@ -246,7 +242,7 @@ public class OscamMonitor extends TabActivity {
 		
 		mnu_profiles.clear();
 		
-		ArrayList<String> pnames = ((MainApp) getApplication()).getProfiles().getProfileNamesArray();
+		ArrayList<String> pnames = MainApp.instance.getProfiles().getProfileNamesArray();
 		for(int i = 0; i < pnames.size(); i++){
 			mnu_profiles.add(0, i + 4, 0, pnames.get(i));
 		}
@@ -294,11 +290,11 @@ public class OscamMonitor extends TabActivity {
 	            break;
 	            
 	        default:
-	        	if((item.getItemId() - 4) != ((MainApp) getApplication()).getProfiles().getActualIdx()){
+	        	if((item.getItemId() - 4) != MainApp.instance.getProfiles().getActualIdx()){
 	        		this.stopRunning();
-	        		if (((MainApp) getApplication()).getClients() != null)
-	        			((MainApp) getApplication()).getClients().clear();
-	        		((MainApp) getApplication()).getProfiles().setActiveProfile(item.getItemId() - 4);
+	        		if (MainApp.instance.getClients() != null)
+	        			MainApp.instance.getClients().clear();
+	        		MainApp.instance.getProfiles().setActiveProfile(item.getItemId() - 4);
 	        		tabHost.setCurrentTab(0);
 	        		this.setAppTitle();
 	        		this.switchViews(0);
@@ -364,7 +360,7 @@ public class OscamMonitor extends TabActivity {
 	
 	*/
 	public void setAppTitle(){
-		this.setTitle("Oscam Monitor: " + ((MainApp) getApplication()).getProfiles().getActiveProfile().getProfile());
+		this.setTitle("Oscam Monitor: " + MainApp.instance.getProfiles().getActiveProfile().getProfile());
 	}
 	
 	private void startRunning(){
@@ -481,7 +477,7 @@ public class OscamMonitor extends TabActivity {
 			
 		});
 	
-		ServerInfo serverinfo = ((MainApp) getApplication()).getServerInfo();
+		ServerInfo serverinfo = MainApp.instance.getServerInfo();
 		
 		Log.i("Statusbar" , "value: " + statusbar_set + " version:  " + serverinfo.getVersion());
 		switch(statusbar_set){
@@ -520,16 +516,16 @@ public class OscamMonitor extends TabActivity {
 
 		@Override
 		public void run() {
-			if (((MainApp) getApplication()).getClients() != null){
+			if (MainApp.instance.getClients() != null){
 
 				
 
 				if (lv1.getAdapter() == null){
-					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , ((MainApp) getApplication()).getClients()));
+					lv1.setAdapter(new ClientAdapter(tabHost.getContext(), R.layout.listview_row1 , MainApp.instance.getClients()));
 				} else {
 
 					ClientAdapter ad = (ClientAdapter) lv1.getAdapter();
-					ad.refreshItems(((MainApp) getApplication()).getClients());
+					ad.refreshItems(MainApp.instance.getClients());
 					ad.notifyDataSetChanged();
 				}
 				
@@ -550,7 +546,7 @@ public class OscamMonitor extends TabActivity {
 	 * Thread
 	 */
 	private void getStatus(){
-		((MainApp) getApplication()).setClients(getStatusClients(filter));
+		MainApp.instance.setClients(getStatusClients(filter));
 		runOnUiThread(returnRes);
 	}
 	
@@ -591,7 +587,7 @@ public class OscamMonitor extends TabActivity {
 	
 	public NodeList getNodes() {
 		try {
-			String httpresponse = ((MainApp) getApplication()).getServerResponse("/oscamapi.html?part=status");
+			String httpresponse = MainApp.instance.getServerResponse("/oscamapi.html?part=status");
 			if(httpresponse.length() > 0){
 				// Create XML-DOM
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -607,7 +603,7 @@ public class OscamMonitor extends TabActivity {
 					runOnUiThread(showError);
 					return null;
 				} else {
-					((MainApp) getApplication()).setServerInfo(serverinfo);
+					MainApp.instance.setServerInfo(serverinfo);
 				}
 
 				// return a list of clientnodes
@@ -615,7 +611,7 @@ public class OscamMonitor extends TabActivity {
 				
 			} else {
 				// get errormessage from main App
-				lasterror = ((MainApp) getApplication()).getLastError();
+				lasterror = MainApp.instance.getLastError();
 				runOnUiThread(showError);
 				return null;
 			}
@@ -784,11 +780,11 @@ public class OscamMonitor extends TabActivity {
 					caidsrvid[1] = o.request_srvid;
 					if(this._srvids[position] == null){
 						this._srvids[position] = caidsrvid[1];
-						this._logos.add(((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0)); // add logo to cache
+						this._logos.add(MainApp.instance.getLogos().getLogo(caidsrvid, 0)); // add logo to cache
 					}
 					if(!this._srvids[position].equals(caidsrvid[1])){
 						this._srvids[position] = caidsrvid[1];
-						this._logos.set(position, ((MainApp) getApplication()).getLogos().getLogo(caidsrvid, 0)); // change logo on cache position
+						this._logos.set(position, MainApp.instance.getLogos().getLogo(caidsrvid, 0)); // change logo on cache position
 					}
 					channellogo.setImageBitmap(this._logos.get(position));
 

@@ -28,7 +28,7 @@ public class SettingsPage extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
-		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		ServerProfiles profiles = MainApp.instance.getProfiles();
 		
 	    switch (item.getItemId()) {
 	        case R.id.mnu_nextprofile:     
@@ -67,7 +67,7 @@ public class SettingsPage extends Activity {
         super.onCreate(savedInstanceState);
 
         
-        lastindex = ((MainApp) getApplication()).getProfiles().getActualIdx();
+        lastindex = MainApp.instance.getProfiles().getActualIdx();
     	
     	
         setContentView(R.layout.settingspage);
@@ -89,7 +89,7 @@ public class SettingsPage extends Activity {
     }
     
 	private void loadSettings(){
-		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		ServerProfiles profiles = MainApp.instance.getProfiles();
 		
 		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
 		profilefield.setText(profiles.getActiveProfile().getProfile());
@@ -108,7 +108,7 @@ public class SettingsPage extends Activity {
 	}
 	
 	private void saveSettings(){
-		ServerProfiles profiles = ((MainApp) getApplication()).getProfiles();
+		ServerProfiles profiles = MainApp.instance.getProfiles();
 		
 		EditText profilefield = (EditText)findViewById(R.id.editProfileName);
 		profiles.getActiveProfile().setProfile(profilefield.getText().toString());
